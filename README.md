@@ -8,6 +8,16 @@ animation, and the navigation wiring.
 > Expo Router project on iOS and Android. (Bare React Native / React Navigation
 > is not supported yet — see [Roadmap](#roadmap).)
 
+## Screenshots
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Bhavinpethani04/react-native-magic-tab-bar/main/assets/screenshots/ios.png" alt="MagicTabs on iOS" width="280" />
+  &nbsp;&nbsp;&nbsp;
+  <img src="https://raw.githubusercontent.com/Bhavinpethani04/react-native-magic-tab-bar/main/assets/screenshots/android.png" alt="MagicTabs on Android" width="280" />
+</p>
+
+<p align="center"><sub>iOS (left) &middot; Android (right)</sub></p>
+
 ## Installation
 
 ```bash
