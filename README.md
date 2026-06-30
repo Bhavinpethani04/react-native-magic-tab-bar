@@ -1,56 +1,121 @@
-# Welcome to your Expo app 👋
+# react-native-magic-tab-bar
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A customizable, animated floating tab bar for **Expo Router** (SDK 56+). You bring
+your own icons and labels — the package handles the layout, the active-pill
+animation, and the navigation wiring.
 
-## Get started
+> Built on Expo Router's headless tabs (`expo-router/ui`). It works in any
+> Expo Router project on iOS and Android. (Bare React Native / React Navigation
+> is not supported yet — see [Roadmap](#roadmap).)
 
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Installation
 
 ```bash
-npm run reset-project
+npm install react-native-magic-tab-bar
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### Peer dependencies
 
-### Other setup steps
+These are normally already present in an Expo Router app:
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+```bash
+npx expo install expo-router react-native-reanimated react-native-safe-area-context react-native-worklets
+```
 
-## Learn more
+Make sure the Reanimated/Worklets Babel plugin is enabled (Expo SDK 56's
+`babel-preset-expo` configures this automatically).
 
-To learn more about developing your project with Expo, look at the following resources:
+## Usage
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+Use `MagicTabs` as your tab navigator in an `app/_layout.tsx`. Each entry in
+`tabs` maps a route to an icon and label:
 
-## Join the community
+```tsx
+// app/_layout.tsx
+import { MagicTabs, type MagicTabIconProps } from "react-native-magic-tab-bar";
+import { Home, Search, User } from "./icons"; // any icon components you like
 
-Join our community of developers creating universal apps.
+export default function Layout() {
+  return (
+    <MagicTabs
+      tabs={[
+        { name: "index",   href: "/",        label: "Home",    icon: ({ color, size }) => <Home color={color} size={size} /> },
+        { name: "search",  href: "/search",  label: "Search",  icon: ({ color, size }) => <Search color={color} size={size} /> },
+        { name: "profile", href: "/profile", label: "Profile", icon: ({ color, size }) => <User color={color} size={size} /> },
+      ]}
+    />
+  );
+}
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+The `name` must match the route file in your `app/` directory (e.g. `index`,
+`search`, `profile`), and `href` is where the tab navigates.
+
+### The glass / blur look
+
+Pass `renderBackground` to render any view behind the bar — e.g. a blur:
+
+```tsx
+import { GlassView } from "expo-glass-effect"; // or @react-native-community/blur on bare RN
+
+<MagicTabs
+  tabs={tabs}
+  renderBackground={() => <GlassView style={{ flex: 1 }} />}
+/>;
+```
+
+When `renderBackground` is omitted, a solid `barColor` is used.
+
+## API
+
+### `<MagicTabs />`
+
+| Prop               | Type                              | Default      | Description                                       |
+| ------------------ | --------------------------------- | ------------ | ------------------------------------------------- |
+| `tabs`             | `MagicTabConfig[]`                | —            | The tabs, in order.                               |
+| `theme`            | `Partial<MagicTabBarTheme>`       | `defaultTheme` | Override any visual token.                       |
+| `variant`          | `'floating' \| 'docked'`          | `'floating'` | Float over content, or dock in flow.              |
+| `renderBackground` | `() => ReactNode`                 | —            | Custom background (blur/glass) behind the bar.    |
+
+### `MagicTabConfig`
+
+| Field   | Type                                       | Description                                   |
+| ------- | ------------------------------------------ | --------------------------------------------- |
+| `name`  | `string`                                   | Route name (matches the file in `app/`).      |
+| `href`  | `Href`                                     | Destination, e.g. `/` or `/search`.           |
+| `label` | `string?`                                  | Shown next to the icon while active.          |
+| `icon`  | `(p: MagicTabIconProps) => ReactNode`      | Renders the icon. Gets `{ focused, color, size }`. |
+
+### Theming (`MagicTabBarTheme`)
+
+`barColor`, `activePillColor`, `activeColor`, `inactiveColor`, `iconSize`,
+`height`, `radius`, `horizontalMargin`, `bottomInset`. See `defaultTheme`.
+
+## Development
+
+This repo is a monorepo: the library lives at the root (`src/`) and `example/`
+is a runnable Expo app that imports the library straight from source.
+
+```bash
+# from the repo root
+npm install            # installs example deps + build tooling, links the library
+cd example && npx expo start
+```
+
+Editing files in `src/` hot-reloads in the example app.
+
+### Building / publishing
+
+```bash
+npm run build     # react-native-builder-bob -> lib/ (ESM + d.ts)
+npm publish
+```
+
+## Roadmap
+
+- Sliding active-pill that animates between tabs (currently per-tab pill).
+- A React Navigation (`@react-navigation/bottom-tabs`) adapter for bare RN.
+
+## License
+
+MIT
