@@ -5,9 +5,25 @@ import {
   type View as RNView,
   type ViewProps,
 } from "react-native";
-import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { MagicTabBarTheme, MagicTabBarVariant } from "./types";
+
+declare const require: (moduleName: string) => unknown;
+
+/**
+ * `expo-glass-effect` is an optional peer dependency. We load it through a
+ * guarded `require` so the library still installs and runs for consumers who
+ * don't need (or install) it — when it's absent, `glass` mode silently falls
+ * back to the translucent `barColor`. The try/catch lets Metro treat it as an
+ * optional dependency instead of failing the bundle.
+ */
+const glassEffect = (() => {
+  try {
+    return require("expo-glass-effect") as typeof import("expo-glass-effect");
+  } catch {
+    return null;
+  }
+})();
 
 /** Lowest bar opacity we allow, so a transparent bar never becomes invisible. */
 export const MIN_BAR_OPACITY = 0.1;
@@ -61,9 +77,9 @@ export const MagicTabBar = forwardRef<RNView, MagicTabBarProps>(
   ) {
     const insets = useSafeAreaInsets();
     const floating = variant !== "docked";
-    // Native Liquid Glass only renders on iOS 26+; everywhere else GlassView
-    // would just fall back to a plain View, so we use our color fallback there.
-    const useGlass = glass && isLiquidGlassAvailable();
+    // Native Liquid Glass needs the optional `expo-glass-effect` dep and iOS
+    // 26+; everywhere else we fall back to the translucent color background.
+    const useGlass = glass && !!glassEffect?.isLiquidGlassAvailable();
     // Only a transparent bar fades; otherwise it stays fully opaque. The level
     // is clamped so it never drops below MIN_BAR_OPACITY or above 1.
     const barOpacity = isTransparent
@@ -102,10 +118,10 @@ export const MagicTabBar = forwardRef<RNView, MagicTabBarProps>(
             >
               {renderBackground()}
             </View>
-          ) : useGlass ? (
+          ) : useGlass && glassEffect ? (
             // Native iOS Liquid Glass. We tint it with the bar color so themes
             // still carry through, and clip it to the bar's rounded corners.
-            <GlassView
+            <glassEffect.GlassView
               pointerEvents="none"
               glassEffectStyle="regular"
               tintColor={theme.barColor}

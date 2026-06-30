@@ -64,6 +64,9 @@
   "peerDependenciesMeta": {
     "react-native-worklets": {
       "optional": true
+    },
+    "expo-glass-effect": {
+      "optional": true
     }
   },
   "devDependencies": {
