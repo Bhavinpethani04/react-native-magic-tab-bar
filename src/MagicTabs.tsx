@@ -9,14 +9,31 @@ import type { MagicTabBarTheme, MagicTabBarVariant, MagicTabConfig } from './typ
 export interface MagicTabsProps {
   /**
    * The tabs to render, in order. Each entry maps a route to an icon + label.
-   * When omitted, a default set is used — Home, Explore, Notifications and
-   * Profile — with matching Ionicons (see {@link defaultTabs}).
+   * When omitted, a default set is used — Home, Explore, Notifications, Inbox
+   * and Profile — with matching Ionicons (see {@link defaultTabs}).
    */
   tabs?: MagicTabConfig[];
   /** Override any part of the default theme. */
   theme?: Partial<MagicTabBarTheme>;
   /** Position the bar floating over content (default) or docked in-flow. */
   variant?: MagicTabBarVariant;
+  /**
+   * Make the bar background see-through. Off by default. When `true`, control
+   * the strength with `transparency`.
+   */
+  isTransparent?: boolean;
+  /**
+   * Opacity of the bar background while `isTransparent` is true, from 0 to 1
+   * (e.g. `0.4` = 40% visible). Clamped to a minimum so the bar never fully
+   * disappears. Defaults to 0.6.
+   */
+  transparency?: number;
+  /**
+   * Render the bar as native iOS Liquid Glass (via `expo-glass-effect`).
+   * Requires iOS 26+; on any other platform it falls back to the translucent
+   * `barColor`. No drop shadow is drawn in glass/transparent mode.
+   */
+  glass?: boolean;
   /** Render a custom background (e.g. a blur/glass view) behind the bar. */
   renderBackground?: () => ReactNode;
 }
@@ -39,6 +56,9 @@ export function MagicTabs({
   tabs = defaultTabs,
   theme: themeOverride,
   variant,
+  isTransparent,
+  transparency,
+  glass,
   renderBackground,
 }: MagicTabsProps) {
   const theme: MagicTabBarTheme = { ...defaultTheme, ...themeOverride };
@@ -47,7 +67,14 @@ export function MagicTabs({
     <Tabs>
       <TabSlot />
       <TabList asChild>
-        <MagicTabBar theme={theme} variant={variant} renderBackground={renderBackground}>
+        <MagicTabBar
+          theme={theme}
+          variant={variant}
+          isTransparent={isTransparent}
+          transparency={transparency}
+          glass={glass}
+          renderBackground={renderBackground}
+        >
           {tabs.map((tab) => (
             <TabTrigger key={tab.name} name={tab.name} href={tab.href} asChild>
               <MagicTabItem icon={tab.icon} label={tab.label} theme={theme} />

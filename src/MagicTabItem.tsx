@@ -108,10 +108,13 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 12,
   },
-  // Active tab may shrink (truncating its label) only as a last resort on very
-  // narrow screens; inactive tabs keep their natural icon size.
+  // The active tab gets extra padding so its pill is a touch larger than the
+  // inactive icons, making the current tab easy to spot. flexShrink lets it
+  // truncate its label only as a last resort on very narrow screens.
   pressableActive: {
     flexShrink: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 18,
   },
   label: {
     fontWeight: '600',

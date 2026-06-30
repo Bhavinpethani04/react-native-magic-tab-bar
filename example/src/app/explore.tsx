@@ -1,5 +1,5 @@
 import { DemoScreen } from "@/components/DemoScreen";
 
 export default function Explore() {
-  return <DemoScreen title="Explore" color="#E8F5E9" />;
+  return <DemoScreen title="Explore" subtitle="Discover trending people and places" />;
 }
