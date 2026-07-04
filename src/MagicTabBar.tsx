@@ -5,8 +5,31 @@ import {
   type View as RNView,
   type ViewProps,
 } from "react-native";
+import Animated, { LinearTransition } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import type { MagicTabBarTheme, MagicTabBarVariant } from "./types";
+import type {
+  MagicLabelPosition,
+  MagicTabBarTheme,
+  MagicTabBarVariant,
+} from "./types";
+
+/**
+ * Layout transition used to morph the bar between its normal and compact
+ * "light" shapes (width, height and bottom margin) when the active tab changes.
+ */
+const barTransition = LinearTransition.springify()
+  .mass(0.5)
+  .damping(16)
+  .stiffness(160);
+
+/** Extra bar height when labels sit below icons, so they have room to breathe. */
+const BOTTOM_LABEL_EXTRA_HEIGHT = 6;
+
+/** Fixed height of the compact "light" bar. */
+const LIGHT_BAR_HEIGHT = 46;
+
+/** Default extra bottom margin added below the bar in "light" mode. */
+const LIGHT_EXTRA_BOTTOM_MARGIN = 14;
 
 declare const require: (moduleName: string) => unknown;
 
@@ -34,6 +57,12 @@ export interface MagicTabBarProps extends ViewProps {
   /** Position the bar floating over content (default) or docked in-flow. */
   variant?: MagicTabBarVariant;
   /**
+   * Where the tab labels sit. `'bottom'` gives the bar extra height so the
+   * stacked icon+label has room to breathe. Provided automatically by
+   * `MagicTabs`.
+   */
+  labelPosition?: MagicLabelPosition;
+  /**
    * Make the bar background see-through. Off by default — the bar is fully
    * opaque. Set the strength of the effect with `transparency`.
    */
@@ -52,6 +81,17 @@ export interface MagicTabBarProps extends ViewProps {
   glass?: boolean;
   /** Render a custom background (e.g. a blur/glass view) behind the bar. */
   renderBackground?: () => ReactNode;
+  /**
+   * Compact "light" mode: a shorter, icon-only bar with extra bottom margin.
+   * Provided automatically by `MagicTabs`.
+   */
+  isLight?: boolean;
+  /**
+   * Extra bottom margin below the bar in "light" mode only. Added on top of the
+   * safe-area inset and `theme.bottomInset`. Ignored when `isLight` is false.
+   * Defaults to {@link LIGHT_EXTRA_BOTTOM_MARGIN}.
+   */
+  lightBottomMargin?: number;
   /** The tab items. Provided automatically by `MagicTabs`. */
   children?: ReactNode;
 }
@@ -65,10 +105,13 @@ export const MagicTabBar = forwardRef<RNView, MagicTabBarProps>(
     {
       theme,
       variant = "floating",
+      labelPosition = "right",
       isTransparent = false,
       transparency = 0.6,
       glass = false,
       renderBackground,
+      isLight = false,
+      lightBottomMargin = LIGHT_EXTRA_BOTTOM_MARGIN,
       children,
       style,
       ...rest
@@ -77,6 +120,16 @@ export const MagicTabBar = forwardRef<RNView, MagicTabBarProps>(
   ) {
     const insets = useSafeAreaInsets();
     const floating = variant !== "docked";
+    // "Light" mode is a fixed, compact height. Otherwise stacked (bottom) labels
+    // need more vertical room than the icon-only / side-by-side layouts, so the
+    // bar grows a little in that mode.
+    const barHeight = isLight
+      ? LIGHT_BAR_HEIGHT
+      : labelPosition === "bottom"
+        ? theme.height + BOTTOM_LABEL_EXTRA_HEIGHT
+        : theme.height;
+    // "Light" mode floats a little higher off the bottom edge.
+    const extraBottomMargin = isLight ? lightBottomMargin : 0;
     // Native Liquid Glass needs the optional `expo-glass-effect` dep and iOS
     // 26+; everywhere else we fall back to the translucent color background.
     const useGlass = glass && !!glassEffect?.isLiquidGlassAvailable();
@@ -95,17 +148,23 @@ export const MagicTabBar = forwardRef<RNView, MagicTabBarProps>(
         pointerEvents="box-none"
         style={[
           floating ? styles.floatingWrapper : styles.dockedWrapper,
+          // Light mode centers a narrower bar; drop the side padding so the
+          // bar's width is measured against the full screen width.
+          isLight && styles.lightWrapper,
           {
-            paddingHorizontal: theme.horizontalMargin,
-            paddingBottom: (floating ? insets.bottom : 0) + theme.bottomInset,
+            paddingHorizontal: isLight ? 0 : theme.horizontalMargin,
+            paddingBottom:
+              (floating ? insets.bottom : 0) + theme.bottomInset + extraBottomMargin,
           },
         ]}
       >
-        <View
+        <Animated.View
+          layout={barTransition}
           style={[
             styles.bar,
             !seeThrough && styles.barShadow,
-            { height: theme.height, borderRadius: theme.radius },
+            isLight && styles.lightBar,
+            { height: barHeight, borderRadius: theme.radius },
           ]}
         >
           {renderBackground ? (
@@ -142,10 +201,10 @@ export const MagicTabBar = forwardRef<RNView, MagicTabBarProps>(
               ]}
             />
           )}
-          <View style={[styles.row, style]} {...rest}>
+          <View style={[isLight ? styles.lightRow : styles.row, style]} {...rest}>
             {children}
           </View>
-        </View>
+        </Animated.View>
       </View>
     );
   },
@@ -164,6 +223,13 @@ const styles = StyleSheet.create({
   bar: {
     flexDirection: "row",
   },
+  // Light mode: a narrower bar (65% of screen width) centered by its wrapper.
+  lightWrapper: {
+    alignItems: "center",
+  },
+  lightBar: {
+    width: "65%",
+  },
   barShadow: {
     shadowColor: "#000",
     shadowOpacity: 0.25,
@@ -177,5 +243,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-around",
     paddingHorizontal: 6,
+  },
+  // Compact "light" row: tighter horizontal padding around the small icons.
+  lightRow: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-around",
+    paddingHorizontal: 10,
   },
 });

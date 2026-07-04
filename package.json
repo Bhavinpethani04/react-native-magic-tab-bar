@@ -1,6 +1,6 @@
 {
   "name": "react-native-magic-tab-bar",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Customizable floating tab bar for Expo Router (SDK 56+). Bring your own icons and labels.",
   "workspaces": [
     "example"
@@ -9,10 +9,15 @@
   "module": "./lib/module/index.js",
   "types": "./lib/typescript/index.d.ts",
   "source": "./src/index.tsx",
+  "sideEffects": false,
   "exports": {
     ".": {
       "types": "./lib/typescript/index.d.ts",
       "default": "./lib/module/index.js"
+    },
+    "./default-tabs": {
+      "types": "./lib/typescript/defaultTabs.d.ts",
+      "default": "./lib/module/defaultTabs.js"
     },
     "./package.json": "./package.json"
   },
@@ -48,12 +53,11 @@
   },
   "author": "Bhavin Pethani <pethanibhavin004@gmail.com>",
   "license": "MIT",
-  "dependencies": {
-    "@expo/vector-icons": "^15.0.2"
-  },
   "peerDependencies": {
+    "@expo/vector-icons": "*",
     "expo": "*",
     "expo-glass-effect": ">=56.0.0",
+    "expo-haptics": ">=56.0.0",
     "expo-router": ">=56.0.0",
     "react": "*",
     "react-native": "*",
@@ -62,10 +66,16 @@
     "react-native-worklets": "*"
   },
   "peerDependenciesMeta": {
+    "@expo/vector-icons": {
+      "optional": true
+    },
     "react-native-worklets": {
       "optional": true
     },
     "expo-glass-effect": {
+      "optional": true
+    },
+    "expo-haptics": {
       "optional": true
     }
   },

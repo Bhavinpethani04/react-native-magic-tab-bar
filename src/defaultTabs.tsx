@@ -15,11 +15,12 @@ const ionicon =
   );
 
 /**
- * The tabs used when `<MagicTabs />` is rendered without a `tabs` prop:
- * Home, Explore, Notifications, Inbox and Profile, each with a matching Ionicon.
+ * A ready-made demo tab set — Home, Explore, Notifications, Inbox and Profile,
+ * each with a matching Ionicon. Opt in via the subpath:
+ * `import { defaultTabs } from 'react-native-magic-tab-bar/default-tabs'`.
  *
- * Assumes the app has routes named `index` (`/`), `explore`, `notifications`,
- * `inbox` and `profile`. Pass your own `tabs` to `<MagicTabs />` to override.
+ * Requires `@expo/vector-icons` and assumes the app has routes named `index`
+ * (`/`), `explore`, `notifications`, `inbox` and `profile`.
  */
 export const defaultTabs: MagicTabConfig[] = [
   {

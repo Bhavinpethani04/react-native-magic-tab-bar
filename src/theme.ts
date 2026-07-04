@@ -10,6 +10,11 @@ export const defaultTheme: MagicTabBarTheme = {
   fontSize: 12,
   height: 56,
   radius: 28,
+  badgeColor: '#FF3B30',
+  badgeTextColor: '#FFFFFF',
+  actionColor: '#0A84FF',
+  actionIconColor: '#FFFFFF',
   horizontalMargin: 14,
   bottomInset: 10,
+  spring: { mass: 0.6, damping: 18, stiffness: 180 },
 };
