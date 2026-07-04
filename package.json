@@ -1,6 +1,6 @@
 {
   "name": "react-native-magic-tab-bar",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Customizable floating tab bar for Expo Router (SDK 56+). Bring your own icons and labels.",
   "workspaces": [
     "example"
