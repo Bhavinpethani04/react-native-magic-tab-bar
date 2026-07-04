@@ -1,4 +1,5 @@
 import { StyleSheet, Text, View } from "react-native";
+import { useFocusedStatusBar } from "./useFocusedStatusBar";
 
 /** Shared page background for every demo screen. */
 const BACKGROUND = "#F5F3EF";
@@ -10,6 +11,9 @@ export function DemoScreen({
   title: string;
   subtitle?: string;
 }) {
+  // Light background -> dark status bar icons.
+  useFocusedStatusBar("dark-content");
+
   return (
     <View style={styles.screen}>
       <Text style={styles.title}>{title}</Text>
