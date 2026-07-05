@@ -24,6 +24,21 @@ function hrefToPath(href: Href): string {
 }
 
 /**
+ * Removes Expo Router group segments (`(group)`) from a path so hrefs match
+ * `usePathname()`. Groups are organizational and never appear in the URL, so
+ * `href: "/(home)/expenses"` must compare against a pathname of `/expenses`.
+ * Collapses any doubled or trailing slashes and falls back to `/` for root.
+ */
+function stripGroupSegments(path: string): string {
+  return (
+    path
+      .replace(/\/\([^/)]+\)/g, '')
+      .replace(/\/{2,}/g, '/')
+      .replace(/(.)\/$/, '$1') || '/'
+  );
+}
+
+/**
  * Finds the tab whose `href` best matches the current path, by longest prefix
  * so nested routes (e.g. `/explore/details`) still resolve to their tab.
  */
@@ -33,13 +48,15 @@ function findActiveTab(
 ): MagicTabConfig | undefined {
   let best: MagicTabConfig | undefined;
   let bestLen = -1;
+  const currentPath = stripGroupSegments(pathname);
   for (const tab of tabs) {
-    const path = hrefToPath(tab.href);
-    if (!path) continue;
+    const rawPath = hrefToPath(tab.href);
+    if (!rawPath) continue;
+    const path = stripGroupSegments(rawPath);
     const matches =
       path === '/'
-        ? pathname === '/'
-        : pathname === path || pathname.startsWith(`${path}/`);
+        ? currentPath === '/'
+        : currentPath === path || currentPath.startsWith(`${path}/`);
     if (matches && path.length > bestLen) {
       best = tab;
       bestLen = path.length;
