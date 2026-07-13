@@ -13,6 +13,7 @@ export type { MagicTabsProps } from './MagicTabs';
 export type { MagicTabBarProps } from './MagicTabBar';
 export type { MagicTabItemProps } from './MagicTabItem';
 export type {
+  MagicHref,
   MagicTabConfig,
   MagicTabIconProps,
   MagicTabBarTheme,

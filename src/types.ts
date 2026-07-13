@@ -1,5 +1,21 @@
 import type { ReactNode } from 'react';
-import type { Href } from 'expo-router';
+
+/**
+ * A navigation destination for a tab.
+ *
+ * Kept intentionally framework-agnostic so the shared types never pull in
+ * `expo-router`: a bare React Native (React Navigation) app should be able to
+ * import these types without Expo installed.
+ *
+ * - With **Expo Router** (`MagicTabs`) this is the route href, e.g. `"/"` or
+ *   `"/search"`, and is **required** — it is structurally compatible with
+ *   Expo Router's own `Href` type.
+ * - With **React Navigation** (`MagicTabBarNavigation`) navigation happens by
+ *   route `name`, so `href` is unused and can be omitted.
+ */
+export type MagicHref =
+  | string
+  | { pathname: string; params?: Record<string, unknown> };
 
 /** Props passed to each tab's `icon` render function. */
 export interface MagicTabIconProps {
@@ -13,10 +29,18 @@ export interface MagicTabIconProps {
 
 /** Configuration for a single tab. */
 export interface MagicTabConfig {
-  /** Route name — must match the file in the `app/` directory (e.g. `"index"`, `"search"`). */
+  /**
+   * Route name.
+   * - Expo Router: matches the file in the `app/` directory (e.g. `"index"`, `"search"`).
+   * - React Navigation: matches the `<Tab.Screen name="...">` route name.
+   */
   name: string;
-  /** Destination href, e.g. `"/"` or `"/search"`. */
-  href: Href;
+  /**
+   * Destination href, e.g. `"/"` or `"/search"`. Required for Expo Router
+   * (`MagicTabs`); ignored by React Navigation (`MagicTabBarNavigation`), which
+   * navigates by `name`.
+   */
+  href?: MagicHref;
   /** Optional text label rendered next to the icon while the tab is active. */
   label?: string;
   /**
