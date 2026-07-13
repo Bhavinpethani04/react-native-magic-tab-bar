@@ -1,12 +1,34 @@
-# react-native-magic-tab-bar
+<h1 align="center">react-native-magic-tab-bar</h1>
 
-A customizable, animated **floating tab bar for [Expo Router](https://docs.expo.dev/router/introduction/)** (SDK 56+). You bring your own icons and labels — the package handles the layout, the active-pill animation, and the navigation wiring.
+<p align="center">
+  A customizable, animated <b>floating tab bar for React Native</b> — one drop-in
+  component that works with <b>Expo Router</b> <i>and</i> <b>React Navigation</b>
+  (bare React Native CLI). Bring your own icons.
+</p>
 
-> Built on Expo Router's headless tabs (`expo-router/ui`). Works in any Expo Router project on **iOS and Android**. (Bare React Native / React Navigation is not supported yet — see [Roadmap](#roadmap).)
+<p align="center">
+  <a href="https://www.npmjs.com/package/react-native-magic-tab-bar"><img alt="npm version" src="https://img.shields.io/npm/v/react-native-magic-tab-bar?color=2563EB&label=npm"></a>
+  <a href="https://www.npmjs.com/package/react-native-magic-tab-bar"><img alt="npm downloads" src="https://img.shields.io/npm/dm/react-native-magic-tab-bar?color=2563EB"></a>
+  <img alt="Platforms: iOS and Android" src="https://img.shields.io/badge/platforms-iOS%20%7C%20Android-lightgrey">
+  <img alt="Ships TypeScript types" src="https://img.shields.io/npm/types/react-native-magic-tab-bar">
+  <a href="./LICENSE"><img alt="MIT license" src="https://img.shields.io/npm/l/react-native-magic-tab-bar?color=2563EB"></a>
+</p>
+
+<p align="center">
+  <b>Expo Router</b> · <b>React Navigation</b> · <b>Expo</b> · <b>React Native CLI</b> · <b>iOS &amp; Android</b> · <b>New Architecture</b> · <b>TypeScript</b>
+</p>
+
+**react-native-magic-tab-bar** is a drop-in **custom bottom tab bar for React Native**. Instead of the default tab bar, you get a floating, animated bar with an active-tab pill, badges, labels, haptics, glass/blur backgrounds and full theming — on both **iOS and Android**. The same component works whether your app uses **[Expo Router](https://docs.expo.dev/router/introduction/)** or **[React Navigation](https://reactnavigation.org/)** (`@react-navigation/bottom-tabs`), so you can search less and ship faster.
+
+> **Two entry points, one look:**
+> - **Expo Router** → `MagicTabs` from `react-native-magic-tab-bar` (see [Quick start](#quick-start)).
+> - **Bare React Native / React Navigation** → `MagicTabBarNavigation` from `react-native-magic-tab-bar/react-navigation` (see [React Navigation](#react-navigation-bare-react-native)).
+>
+> Pick whichever entry point matches your app — you never pull in the other framework's dependencies.
 
 ## Features
 
-- 🎯 **Drop-in** — replaces your Expo Router tabs layout; bring your own icons.
+- 🎯 **Drop-in for both** — one component for Expo Router *and* React Navigation; bring your own icons.
 - ✨ **Animated active pill** with a spring you can tune.
 - 🏷️ **Flexible labels** — beside or below the icon; show on the active tab, always, or never.
 - 🔴 **Badges** — dots or counts on any tab.
@@ -18,8 +40,10 @@ A customizable, animated **floating tab bar for [Expo Router](https://docs.expo.
 
 ## Table of contents
 
+- [Compatibility](#compatibility)
 - [Installation](#installation)
-- [Quick start](#quick-start)
+- [Quick start](#quick-start) *(Expo Router)*
+- [React Navigation (bare React Native)](#react-navigation-bare-react-native)
 - [Recipes](#recipes)
   - [Labels](#labels)
   - [Badges](#badges)
@@ -37,24 +61,41 @@ A customizable, animated **floating tab bar for [Expo Router](https://docs.expo.
 ## Screenshots
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Bhavinpethani04/react-native-magic-tab-bar/main/assets/gifs/ios.gif" alt="MagicTabs on iOS" width="280" />
+  <img src="https://raw.githubusercontent.com/Bhavinpethani04/react-native-magic-tab-bar/main/assets/gifs/ios.gif" alt="react-native-magic-tab-bar animated floating tab bar demo on iOS" width="280" />
   &nbsp;&nbsp;&nbsp;
-  <img src="https://raw.githubusercontent.com/Bhavinpethani04/react-native-magic-tab-bar/main/assets/gifs/android.gif" alt="MagicTabs on Android" width="280" />
+  <img src="https://raw.githubusercontent.com/Bhavinpethani04/react-native-magic-tab-bar/main/assets/gifs/android.gif" alt="react-native-magic-tab-bar animated floating tab bar demo on Android" width="280" />
 </p>
 
 <p align="center"><sub>iOS (left) &middot; Android (right)</sub></p>
 
-## Installation
+## Compatibility
 
-> **Requirements:** an [Expo Router](https://docs.expo.dev/router/introduction/) project (Expo SDK 56+) with an `app/` directory. Works on iOS & Android.
+| Environment | How you use it | Supported |
+| --- | --- | :---: |
+| **Expo Router** (SDK 56+) | `MagicTabs` from `react-native-magic-tab-bar` | ✅ |
+| **React Navigation** (`@react-navigation/bottom-tabs` v6 & v7) | `MagicTabBarNavigation` from `react-native-magic-tab-bar/react-navigation` | ✅ |
+| **Bare React Native CLI** | via React Navigation | ✅ |
+| **Expo** (managed & prebuild) | via Expo Router | ✅ |
+| **iOS** &middot; **Android** | — | ✅ |
+| **New Architecture** (Fabric) | — | ✅ |
+| **TypeScript** | types bundled, no `@types` needed | ✅ |
+
+## Installation
 
 ```bash
 npm install react-native-magic-tab-bar
+# yarn add react-native-magic-tab-bar
+# pnpm add react-native-magic-tab-bar
+# bun add react-native-magic-tab-bar
 ```
 
-### Peer dependencies
+Then install the peer dependencies for your framework 👇
 
-These are normally already present in an Expo Router app:
+### Expo Router
+
+> **Requirements:** an [Expo Router](https://docs.expo.dev/router/introduction/) project (Expo SDK 56+) with an `app/` directory.
+
+Peer dependencies (normally already present in an Expo Router app):
 
 ```bash
 npx expo install expo-router react-native-reanimated react-native-safe-area-context react-native-worklets
@@ -62,15 +103,36 @@ npx expo install expo-router react-native-reanimated react-native-safe-area-cont
 
 Make sure the Reanimated/Worklets Babel plugin is enabled (Expo SDK 56's `babel-preset-expo` configures this automatically).
 
-### Optional dependencies
-
-Install these only if you use the matching feature — the library works without them:
+Optional — install only if you use the matching feature:
 
 ```bash
 npx expo install expo-glass-effect   # native iOS Liquid Glass (glass prop)
 npx expo install expo-haptics        # selection haptics (haptics prop)
 npx expo install @expo/vector-icons  # only for the /default-tabs demo set
 ```
+
+### React Native CLI (React Navigation)
+
+> **Requirements:** a bare React Native CLI app using [`@react-navigation/bottom-tabs`](https://reactnavigation.org/docs/bottom-tab-navigator).
+
+```bash
+npm install @react-navigation/native @react-navigation/bottom-tabs \
+  react-native-screens react-native-safe-area-context \
+  react-native-reanimated react-native-worklets
+```
+
+Add the Worklets/Reanimated plugin **last** in your `babel.config.js`:
+
+```js
+module.exports = {
+  presets: ['module:@react-native/babel-preset'],
+  plugins: ['react-native-worklets/plugin'],
+};
+```
+
+iOS: `cd ios && pod install`. No Expo packages are required — the `glass` and `haptics` props are Expo-only and simply no-op here unless you install `expo-glass-effect` / `expo-haptics`.
+
+See the runnable [`example-cli`](example-cli) app for a complete setup.
 
 ## Quick start
 
@@ -116,7 +178,60 @@ icon: ({ focused, color, size }) => (
 > <MagicTabs tabs={defaultTabs} />;
 > ```
 
+## React Navigation (bare React Native)
+
+In a bare React Native app you use `MagicTabBarNavigation` as the `tabBar` of a
+[bottom tab navigator](https://reactnavigation.org/docs/bottom-tab-navigator).
+It takes the **same tab config** as `MagicTabs` — just without `href` (React
+Navigation routes by `name`) — so the bar looks and behaves identically.
+
+```tsx
+import { NavigationContainer } from "@react-navigation/native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { MagicTabBarNavigation } from "react-native-magic-tab-bar/react-navigation";
+import Ionicons from "react-native-vector-icons/Ionicons";
+
+const Tab = createBottomTabNavigator();
+
+const tabs = [
+  { name: "Home",    label: "Home",    icon: ({ color, size }) => <Ionicons name="home"   color={color} size={size} /> },
+  { name: "Search",  label: "Search",  icon: ({ color, size }) => <Ionicons name="search" color={color} size={size} /> },
+  { name: "Profile", label: "Profile", icon: ({ color, size }) => <Ionicons name="person" color={color} size={size} /> },
+];
+
+export default function App() {
+  return (
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <Tab.Navigator
+          screenOptions={{ headerShown: false }}
+          tabBar={(props) => <MagicTabBarNavigation {...props} tabs={tabs} />}
+        >
+          <Tab.Screen name="Home"    component={HomeScreen} />
+          <Tab.Screen name="Search"  component={SearchScreen} />
+          <Tab.Screen name="Profile" component={ProfileScreen} />
+        </Tab.Navigator>
+      </NavigationContainer>
+    </SafeAreaProvider>
+  );
+}
+```
+
+- Each `tabs[].name` must match a `<Tab.Screen name>`.
+- **No `href`** — that's an Expo Router concept; React Navigation navigates by `name`.
+- Every visual prop from `MagicTabs` (`theme`, `showLabels`, `labelPosition`, `variant`, `isTransparent`, `renderBackground`, `haptics`, `onTabPress`, …) works here too, plus all the [Recipes](#recipes) below.
+
+> **Icons** are bring-your-own, exactly like the Expo entry — the `icon` render function is identical. This example uses [`react-native-vector-icons`](https://github.com/oblador/react-native-vector-icons) (the bare-RN counterpart of `@expo/vector-icons`). Bundle its fonts the CocoaPods way — **not** `react-native-asset`: on **iOS** the pod bundles the font files (just add a `UIAppFonts` entry to `Info.plist`), and on **Android** apply the package's `fonts.gradle` in `app/build.gradle`. The only Expo-specific props are `glass` (`expo-glass-effect`) and `haptics` (`expo-haptics`), which no-op in bare RN unless you add those modules.
+
+> Prefer to keep the config next to your screens instead of a `tabs` array? The
+> config is just data — build it however you like; only `name` and `icon` are
+> required per tab.
+
 ## Recipes
+
+> The recipes below are written with `MagicTabs` (Expo Router), but every prop
+> shown also works on `MagicTabBarNavigation` — pass it the same way.
 
 ### Labels
 
@@ -263,8 +378,8 @@ See the [full token list with defaults](#magictabbartheme) for sizes (`iconSize`
 
 | Field | Type | Description |
 | --- | --- | --- |
-| `name` | `string` | Route name (matches the file in `app/`). |
-| `href` | `Href` | Destination, e.g. `/` or `/search`. |
+| `name` | `string` | Route name. Expo Router: matches the file in `app/`. React Navigation: matches `<Tab.Screen name>`. |
+| `href` | `MagicHref?` | Destination, e.g. `/` or `/search`. **Required for Expo Router**, ignored by React Navigation. |
 | `icon` | `(p: MagicTabIconProps) => ReactNode` | Renders the icon. Gets `{ focused, color, size }`. |
 | `label` | `string?` | Text label. |
 | `showLabel` | `boolean?` | Per-tab override of `showLabels`. |
@@ -272,6 +387,20 @@ See the [full token list with defaults](#magictabbartheme) for sizes (`iconSize`
 | `disabled` | `boolean?` | Dim the tab and block navigation. |
 | `variant` | `'action'?` | Render as a raised FAB button. |
 | `isLight` | `boolean?` | Switch the whole bar to light mode while this tab is active. |
+
+### `<MagicTabBarNavigation />`
+
+The React Navigation binding, imported from `react-native-magic-tab-bar/react-navigation`. Pass it to `Tab.Navigator`'s `tabBar` prop.
+
+It receives React Navigation's `BottomTabBarProps` (spread from `{...props}`) plus:
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `tabs` | `MagicNavigationTab[]` | **required** | Per-tab config keyed by route `name` (same as `MagicTabConfig` but without `href`). |
+
+All other visual props are identical to [`<MagicTabs />`](#magictabs-): `theme`, `showLabels`, `labelPosition`, `variant`, `isLight`, `lightBottomMargin`, `isTransparent`, `transparency`, `glass`, `renderBackground`, `haptics`, `onTabPress`, `onTabLongPress`.
+
+> `MagicNavigationTab` is `Omit<MagicTabConfig, 'href'>`.
 
 ### `MagicTabBarTheme`
 
@@ -295,21 +424,30 @@ See the [full token list with defaults](#magictabbartheme) for sizes (`iconSize`
 
 ### Exported types
 
-`MagicTabConfig`, `MagicTabIconProps`, `MagicTabBarTheme`, `MagicTabBarVariant`, `MagicTabPressHandler`, `MagicLabelMode`, `MagicLabelPosition`, `MagicSpringConfig`, plus the `defaultTheme` value.
+`MagicTabConfig`, `MagicHref`, `MagicTabIconProps`, `MagicTabBarTheme`, `MagicTabBarVariant`, `MagicTabPressHandler`, `MagicLabelMode`, `MagicLabelPosition`, `MagicSpringConfig`, plus the `defaultTheme` value.
+
+From `react-native-magic-tab-bar/react-navigation`: `MagicTabBarNavigation`, `MagicTabBarNavigationProps`, `MagicNavigationTab`.
 
 > `defaultTabs` is exported from the `react-native-magic-tab-bar/default-tabs` subpath (not the main entry), so the core adds **zero runtime dependencies**.
 
 ## Development
 
-This repo is a monorepo: the library lives at the root (`src/`) and `example/` is a runnable Expo app that imports the library straight from source.
+This repo is a monorepo: the library lives at the root (`src/`), with two runnable example apps that import the library straight from source:
+
+- [`example`](example) — Expo Router app (`MagicTabs`).
+- [`example-cli`](example-cli) — bare React Native CLI app (`MagicTabBarNavigation`).
 
 ```bash
-# from the repo root
-npm install            # installs example deps + build tooling, links the library
+# Expo Router example
+npm install            # from the repo root: installs example deps + build tooling
 cd example && npx expo start
+
+# React Native CLI example
+cd example-cli && npm install
+npm run ios            # or: npm run android
 ```
 
-Editing files in `src/` hot-reloads in the example app.
+Editing files in `src/` hot-reloads in whichever example is running.
 
 ### Building / publishing
 
@@ -323,7 +461,7 @@ npm publish
 ## Roadmap
 
 - Sliding active-pill that animates between tabs (currently per-tab pill).
-- A React Navigation (`@react-navigation/bottom-tabs`) adapter for bare RN.
+- ✅ ~~A React Navigation (`@react-navigation/bottom-tabs`) adapter for bare RN.~~ Shipped — see [React Navigation](#react-navigation-bare-react-native).
 
 ## License
 

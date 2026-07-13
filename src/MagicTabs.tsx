@@ -6,6 +6,7 @@ import { MagicTabItem } from './MagicTabItem';
 import { defaultTheme } from './theme';
 import type { Href } from 'expo-router';
 import type {
+  MagicHref,
   MagicLabelMode,
   MagicLabelPosition,
   MagicTabBarTheme,
@@ -16,10 +17,10 @@ import type {
 
 declare const __DEV__: boolean;
 
-/** Best-effort string path for an `Href` (covers string and `{ pathname }` forms). */
-function hrefToPath(href: Href): string {
+/** Best-effort string path for a href (covers string and `{ pathname }` forms). */
+function hrefToPath(href: MagicHref | undefined): string {
   if (typeof href === 'string') return href;
-  const pathname = (href as { pathname?: string })?.pathname;
+  const pathname = (href as { pathname?: string } | undefined)?.pathname;
   return typeof pathname === 'string' ? pathname : '';
 }
 
@@ -221,6 +222,13 @@ export function MagicTabs({
           renderBackground={renderBackground}
         >
           {tabs.map((tab) => {
+            if (__DEV__ && tab.href === undefined) {
+              console.warn(
+                `[MagicTabs] tab "${tab.name}" is missing a \`href\`. ` +
+                  'Expo Router requires one on every tab (e.g. href: "/search"). ' +
+                  '`href` is only optional when using MagicTabBarNavigation with React Navigation.',
+              );
+            }
             // A tab's `showLabel` overrides the bar-level mode: `false` forces
             // icon-only, `true` shows it (falling back to `'active'` when the
             // bar itself is set to `'never'`).
@@ -233,7 +241,12 @@ export function MagicTabs({
                     : barLabelMode
                   : 'never';
             return (
-              <TabTrigger key={tab.name} name={tab.name} href={tab.href} asChild>
+              <TabTrigger
+                key={tab.name}
+                name={tab.name}
+                href={tab.href as Href}
+                asChild
+              >
                 <MagicTabItem
                   name={tab.name}
                   icon={tab.icon}
