@@ -41,6 +41,7 @@
 ## Table of contents
 
 - [Compatibility](#compatibility)
+- [Why react-native-magic-tab-bar?](#why-react-native-magic-tab-bar) *(comparison)*
 - [Installation](#installation)
 - [Quick start](#quick-start) *(Expo Router)*
 - [React Navigation (bare React Native)](#react-navigation-bare-react-native)
@@ -54,6 +55,7 @@
   - [Light mode](#light-mode-compact-bar)
   - [Theming](#theming)
 - [API](#api)
+- [FAQ](#faq)
 - [Development](#development)
 - [Roadmap](#roadmap)
 - [License](#license)
@@ -79,6 +81,23 @@
 | **iOS** &middot; **Android** | — | ✅ |
 | **New Architecture** (Fabric) | — | ✅ |
 | **TypeScript** | types bundled, no `@types` needed | ✅ |
+
+## Why react-native-magic-tab-bar?
+
+How it compares to other ways of building a **React Native bottom tab bar**:
+
+| | Default `@react-navigation/bottom-tabs` | Roll your own `tabBar` | **react-native-magic-tab-bar** |
+| --- | :---: | :---: | :---: |
+| Floating / docked bar | ❌ | 🛠️ DIY | ✅ built-in |
+| Animated active pill (Reanimated) | ❌ | 🛠️ DIY | ✅ |
+| Badges, labels, haptics | partial | 🛠️ DIY | ✅ |
+| Glass / blur / iOS Liquid Glass | ❌ | 🛠️ DIY | ✅ |
+| Action / FAB center tab | ❌ | 🛠️ DIY | ✅ |
+| **Works with Expo Router *and* React Navigation** | — | — | ✅ one component |
+| Bring your own icons (no icon lib forced) | ✅ | ✅ | ✅ |
+| TypeScript types bundled | ✅ | 🛠️ DIY | ✅ |
+
+If you've searched for a **custom bottom tab bar**, **floating tab bar**, or an **animated tab bar** and found options that only support Expo *or* bare React Native — this is one drop-in component that covers both, so you don't rewrite the bar when you switch navigators.
 
 ## Installation
 
@@ -429,6 +448,40 @@ All other visual props are identical to [`<MagicTabs />`](#magictabs-): `theme`,
 From `react-native-magic-tab-bar/react-navigation`: `MagicTabBarNavigation`, `MagicTabBarNavigationProps`, `MagicNavigationTab`.
 
 > `defaultTabs` is exported from the `react-native-magic-tab-bar/default-tabs` subpath (not the main entry), so the core adds **zero runtime dependencies**.
+
+## FAQ
+
+### How do I create a custom bottom tab bar in Expo Router?
+
+Render `MagicTabs` in your `app/_layout.tsx` and pass a `tabs` array mapping each route to an icon and label. It replaces Expo Router's default tab bar without you writing any layout code — see the [Quick start](#quick-start).
+
+### How do I replace the default tab bar in React Navigation?
+
+Pass `MagicTabBarNavigation` to your navigator's `tabBar` prop: `<Tab.Navigator tabBar={(props) => <MagicTabBarNavigation {...props} tabs={tabs} />}>`. It works with `@react-navigation/bottom-tabs` v6 and v7 in a bare React Native CLI app — see [React Navigation (bare React Native)](#react-navigation-bare-react-native).
+
+### Does it work with both Expo Router and React Navigation?
+
+Yes — that's the point. The same look ships as two entry points: `MagicTabs` for Expo Router and `react-native-magic-tab-bar/react-navigation` for bare React Native. You only pull in the framework you actually use; the other framework's dependencies are never installed.
+
+### Does it support the New Architecture (Fabric) and Reanimated 3?
+
+Yes. Animations run on `react-native-reanimated` (v3+) with `react-native-worklets`, and the library is tested on the New Architecture (Fabric) on both iOS and Android.
+
+### How do I add a floating action button (FAB) to the tab bar?
+
+Give any tab `variant: "action"` and it renders as a raised, circular center button using the theme's `actionColor` / `actionIconColor` — see [Action (FAB) tab](#action-fab-tab).
+
+### Does it support iOS Liquid Glass / a blur tab bar?
+
+Yes. Turn on the `glass` prop for a translucent blur background, backed by native iOS Liquid Glass when `expo-glass-effect` is installed — see [Glass, blur and transparency](#glass-blur-and-transparency). On Android and bare RN it falls back gracefully.
+
+### Do I have to use a specific icon library?
+
+No. Bring your own icons — pass any component from each tab's `icon` render function (`@expo/vector-icons`, `react-native-vector-icons`, SVGs, or your own). The core adds **zero runtime dependencies** and forces no icon library.
+
+### Is it written in TypeScript?
+
+Yes — types are bundled, so there's no separate `@types` package to install.
 
 ## Development
 

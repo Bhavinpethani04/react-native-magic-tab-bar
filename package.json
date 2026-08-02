@@ -1,7 +1,7 @@
 {
   "name": "react-native-magic-tab-bar",
-  "version": "2.1.0",
-  "description": "Customizable floating tab bar for Expo Router and React Navigation (bare React Native). Bring your own icons and labels.",
+  "version": "2.1.1",
+  "description": "Custom animated bottom tab bar for React Native — floating, glass/blur, badges & haptics. One component for Expo Router and React Navigation (bare RN CLI). iOS & Android, TypeScript.",
   "workspaces": [
     "example"
   ],
@@ -37,6 +37,7 @@
     "clean": "del-cli lib",
     "prepare": "bob build",
     "typecheck": "tsc --noEmit",
+    "test": "jest",
     "example": "npm --prefix example run start"
   },
   "keywords": [
@@ -47,14 +48,24 @@
     "react-native-cli",
     "bottom-tabs",
     "bottom-tab-navigator",
+    "bottom-navigation",
     "tab-bar",
     "tabbar",
     "tabs",
+    "tab-navigator",
+    "react-native-tab-bar",
     "floating-tab-bar",
     "animated-tab-bar",
     "custom-tab-bar",
+    "custom-bottom-tab-bar",
+    "glass-tab-bar",
+    "blur-tab-bar",
+    "haptic-tab-bar",
     "navigation",
     "reanimated",
+    "new-architecture",
+    "fabric",
+    "typescript",
     "ios",
     "android"
   ],
@@ -109,11 +120,17 @@
     }
   },
   "devDependencies": {
+    "@babel/core": "^7.29.7",
+    "@babel/preset-env": "^7.29.7",
+    "@babel/preset-typescript": "^7.29.7",
     "@expo/vector-icons": "^15.1.1",
     "@react-navigation/bottom-tabs": "^7.0.0",
     "@react-navigation/native": "^7.0.0",
+    "@types/jest": "^29.5.14",
     "@types/react": "~19.2.2",
+    "babel-jest": "^29.7.0",
     "del-cli": "^6.0.0",
+    "jest": "^29.7.0",
     "react-native-builder-bob": "^0.40.0",
     "typescript": "~6.0.3"
   },
@@ -127,7 +144,12 @@
           "esm": true
         }
       ],
-      "typescript"
+      [
+        "typescript",
+        {
+          "project": "tsconfig.build.json"
+        }
+      ]
     ]
   }
 }

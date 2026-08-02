@@ -12,7 +12,8 @@
     "allowSyntheticDefaultImports": true,
     "declaration": true,
     "noEmit": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "types": ["jest"]
   },
   "include": ["src"],
   "exclude": ["node_modules", "lib", "example"]

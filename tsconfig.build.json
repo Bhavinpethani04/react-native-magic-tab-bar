@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    // The shipped declarations must not pull in test-only ambient types.
+    // The base config enables `["jest"]` so `tsc --noEmit` can type-check the
+    // suite; the build path (bob) excludes tests, so it needs no ambient types.
+    "types": []
+  },
+  "exclude": [
+    "node_modules",
+    "lib",
+    "example",
+    "src/**/__tests__/**",
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx"
+  ]
+}
