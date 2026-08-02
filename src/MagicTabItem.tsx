@@ -22,6 +22,7 @@ import type {
   MagicTabIconProps,
   MagicTabPressHandler,
 } from './types';
+import { formatBadge, hasBadge } from './utils';
 
 declare const require: (moduleName: string) => unknown;
 
@@ -46,15 +47,13 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 /** Fixed small icon size used by the compact "light" tab bar. */
 const LIGHT_ICON_SIZE = 20;
 
-/** Whether a `badge` value should render anything at all. */
-function hasBadge(badge: MagicTabItemProps['badge']): boolean {
-  return badge === true || (typeof badge === 'number' && badge > 0) || (typeof badge === 'string' && badge.length > 0);
-}
-
-/** Formats a numeric/string badge; numbers above 99 collapse to `99+`. */
-function formatBadge(badge: number | string): string {
-  return typeof badge === 'number' && badge > 99 ? '99+' : String(badge);
-}
+/**
+ * Extra vertical touch area added to every tab. The icons (and their tight
+ * padding) render smaller than the ~44pt / 48dp minimum tappable size the iOS
+ * HIG and Material guidelines recommend, so we expand the hit region without
+ * changing the visual layout. Vertical only, so adjacent tabs never overlap.
+ */
+const TAB_HIT_SLOP = { top: 8, bottom: 8 } as const;
 
 export interface MagicTabItemProps {
   /** Renders the icon. Provided automatically by `MagicTabs`. */
@@ -209,6 +208,7 @@ export const MagicTabItem = memo(forwardRef<RNView, MagicTabItemProps>(
           onLongPress={handleLongPress}
           disabled={disabled}
           accessibilityRole="button"
+          accessibilityLabel={label ?? name}
           accessibilityState={{ selected: focused, disabled }}
           style={[
             styles.action,
@@ -238,7 +238,9 @@ export const MagicTabItem = memo(forwardRef<RNView, MagicTabItemProps>(
           onLongPress={handleLongPress}
           disabled={disabled}
           accessibilityRole="tab"
+          accessibilityLabel={label ?? name}
           accessibilityState={{ selected: focused, disabled }}
+          hitSlop={TAB_HIT_SLOP}
           layout={transition}
           style={[styles.itemLight, disabled && styles.disabled]}
         >
@@ -275,7 +277,9 @@ export const MagicTabItem = memo(forwardRef<RNView, MagicTabItemProps>(
           onLongPress={handleLongPress}
           disabled={disabled}
           accessibilityRole="tab"
+          accessibilityLabel={label ?? name}
           accessibilityState={{ selected: focused, disabled }}
+          hitSlop={TAB_HIT_SLOP}
           layout={transition}
           style={[styles.itemBottom, disabled && styles.disabled]}
         >
@@ -320,7 +324,9 @@ export const MagicTabItem = memo(forwardRef<RNView, MagicTabItemProps>(
         onLongPress={handleLongPress}
         disabled={disabled}
         accessibilityRole="tab"
+        accessibilityLabel={label ?? name}
         accessibilityState={{ selected: focused, disabled }}
+        hitSlop={TAB_HIT_SLOP}
         layout={transition}
         style={[
           styles.pressable,

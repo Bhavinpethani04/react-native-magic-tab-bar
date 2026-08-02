@@ -9,26 +9,26 @@
 /* Begin PBXBuildFile section */
 		00442A2B7F58C0BBA9A9B82E /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 89734BC07B12E37031F7A1E0 /* PrivacyInfo.xcprivacy */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		23D1E31DA6BCAE6E2C79D92E /* libPods-reactnativemagictabbar.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 02DE7AEE3AEA2AD88E4BF1F0 /* libPods-reactnativemagictabbar.a */; };
 		38EF1B9CAC3E4B1BA080CE08 /* expo.icon in Resources */ = {isa = PBXBuildFile; fileRef = 6D2A65037DE34E6FBDF7FFEE /* expo.icon */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		561AB5457D77AFBBFB373C15 /* libPods-reactnativemagictabbar.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B13CEEE9C7CC64193F0AA3C /* libPods-reactnativemagictabbar.a */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
 		F13669411768FC20A9DBEE8E /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C5C1278B99578CED415E219 /* ExpoModulesProvider.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0B13CEEE9C7CC64193F0AA3C /* libPods-reactnativemagictabbar.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-reactnativemagictabbar.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		02DE7AEE3AEA2AD88E4BF1F0 /* libPods-reactnativemagictabbar.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-reactnativemagictabbar.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07F961A680F5B00A75B9A /* reactnativemagictabbar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = reactnativemagictabbar.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = reactnativemagictabbar/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = reactnativemagictabbar/Info.plist; sourceTree = "<group>"; };
 		1C5C1278B99578CED415E219 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-reactnativemagictabbar/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		3C724C16FA0E9857EDD52621 /* Pods-reactnativemagictabbar.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-reactnativemagictabbar.release.xcconfig"; path = "Target Support Files/Pods-reactnativemagictabbar/Pods-reactnativemagictabbar.release.xcconfig"; sourceTree = "<group>"; };
 		6D2A65037DE34E6FBDF7FFEE /* expo.icon */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = expo.icon; path = reactnativemagictabbar/expo.icon; sourceTree = "<group>"; };
 		89734BC07B12E37031F7A1E0 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = reactnativemagictabbar/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		8AF7670505599A422CDC0818 /* Pods-reactnativemagictabbar.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-reactnativemagictabbar.debug.xcconfig"; path = "Target Support Files/Pods-reactnativemagictabbar/Pods-reactnativemagictabbar.debug.xcconfig"; sourceTree = "<group>"; };
+		9EAD30B2AE7DFF7229EB0878 /* Pods-reactnativemagictabbar.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-reactnativemagictabbar.release.xcconfig"; path = "Target Support Files/Pods-reactnativemagictabbar/Pods-reactnativemagictabbar.release.xcconfig"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = reactnativemagictabbar/SplashScreen.storyboard; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
+		D2480ED8357E44928625387D /* Pods-reactnativemagictabbar.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-reactnativemagictabbar.debug.xcconfig"; path = "Target Support Files/Pods-reactnativemagictabbar/Pods-reactnativemagictabbar.debug.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = reactnativemagictabbar/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* reactnativemagictabbar-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "reactnativemagictabbar-Bridging-Header.h"; path = "reactnativemagictabbar/reactnativemagictabbar-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -39,23 +39,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				561AB5457D77AFBBFB373C15 /* libPods-reactnativemagictabbar.a in Frameworks */,
+				23D1E31DA6BCAE6E2C79D92E /* libPods-reactnativemagictabbar.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		1161EB8D92EE8D2D5D7B8038 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				8AF7670505599A422CDC0818 /* Pods-reactnativemagictabbar.debug.xcconfig */,
-				3C724C16FA0E9857EDD52621 /* Pods-reactnativemagictabbar.release.xcconfig */,
-			);
-			name = Pods;
-			path = Pods;
-			sourceTree = "<group>";
-		};
 		13B07FAE1A68108700A75B9A /* reactnativemagictabbar */ = {
 			isa = PBXGroup;
 			children = (
@@ -75,7 +65,7 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				0B13CEEE9C7CC64193F0AA3C /* libPods-reactnativemagictabbar.a */,
+				02DE7AEE3AEA2AD88E4BF1F0 /* libPods-reactnativemagictabbar.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -94,8 +84,8 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				1161EB8D92EE8D2D5D7B8038 /* Pods */,
 				DFF0D454855F4E1C75F5C793 /* ExpoModulesProviders */,
+				A17D30CDC1E48BE8E20E257F /* Pods */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -108,6 +98,16 @@
 				13B07F961A680F5B00A75B9A /* reactnativemagictabbar.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		A17D30CDC1E48BE8E20E257F /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				D2480ED8357E44928625387D /* Pods-reactnativemagictabbar.debug.xcconfig */,
+				9EAD30B2AE7DFF7229EB0878 /* Pods-reactnativemagictabbar.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
 			sourceTree = "<group>";
 		};
 		BB2F792B24A3F905000567C9 /* Supporting */ = {
@@ -142,14 +142,14 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "reactnativemagictabbar" */;
 			buildPhases = (
-				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
+				E6E6B189D17033171751D74E /* [CP] Check Pods Manifest.lock */,
 				AAED6A2063972B84F4EF1773 /* [Expo] Configure project */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				2B3120FC4B6AB90D2EF3499C /* [CP] Embed Pods Frameworks */,
+				CB8CFF17A94C4693F140D8F9 /* [CP] Embed Pods Frameworks */,
+				E81FB6A608D21CD8D0BE9923 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -224,29 +224,31 @@
 			shellPath = /bin/sh;
 			shellScript = "if [[ -f \"$PODS_ROOT/../.xcode.env\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env\"\nfi\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\n# The project root by default is one level up from the ios directory\nexport PROJECT_ROOT=\"$PROJECT_DIR\"/..\n\nif [[ \"$CONFIGURATION\" = *Debug* ]]; then\n  export SKIP_BUNDLING=1\nfi\nif [[ -z \"$ENTRY_FILE\" ]]; then\n  # Set the entry JS file using the bundler's entry resolution.\n  export ENTRY_FILE=\"$(\"$NODE_BINARY\" -e \"require('expo/scripts/resolveAppEntry')\" \"$PROJECT_ROOT\" ios absolute | tail -n 1)\"\nfi\n\nif [[ -z \"$CLI_PATH\" ]]; then\n  # Use Expo CLI\n  export CLI_PATH=\"$(\"$NODE_BINARY\" --print \"require.resolve('@expo/cli', { paths: [require.resolve('expo/package.json')] })\")\"\nfi\nif [[ -z \"$BUNDLE_COMMAND\" ]]; then\n  # Default Expo CLI command for bundling\n  export BUNDLE_COMMAND=\"export:embed\"\nfi\n\n# Source .xcode.env.updates if it exists to allow\n# SKIP_BUNDLING to be unset if needed\nif [[ -f \"$PODS_ROOT/../.xcode.env.updates\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.updates\"\nfi\n# Source local changes to allow overrides\n# if needed\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\n`\"$NODE_BINARY\" --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'\"`\n\n";
 		};
-		08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */ = {
+		AAED6A2063972B84F4EF1773 /* [Expo] Configure project */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputFileListPaths = (
 			);
 			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
+				"$(SRCROOT)/.xcode.env",
+				"$(SRCROOT)/.xcode.env.local",
+				"$(SRCROOT)/reactnativemagictabbar/reactnativemagictabbar.entitlements",
+				"$(SRCROOT)/Pods/Target Support Files/Pods-reactnativemagictabbar/expo-configure-project.sh",
 			);
-			name = "[CP] Check Pods Manifest.lock";
+			name = "[Expo] Configure project";
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-reactnativemagictabbar-checkManifestLockResult.txt",
+				"$(SRCROOT)/Pods/Target Support Files/Pods-reactnativemagictabbar/ExpoModulesProvider.swift",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
+			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-reactnativemagictabbar/expo-configure-project.sh\"\n";
 		};
-		2B3120FC4B6AB90D2EF3499C /* [CP] Embed Pods Frameworks */ = {
+		CB8CFF17A94C4693F140D8F9 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -290,7 +292,29 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-reactnativemagictabbar/Pods-reactnativemagictabbar-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */ = {
+		E6E6B189D17033171751D74E /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-reactnativemagictabbar-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E81FB6A608D21CD8D0BE9923 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -320,30 +344,6 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-reactnativemagictabbar/Pods-reactnativemagictabbar-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		AAED6A2063972B84F4EF1773 /* [Expo] Configure project */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/.xcode.env",
-				"$(SRCROOT)/.xcode.env.local",
-				"$(SRCROOT)/reactnativemagictabbar/reactnativemagictabbar.entitlements",
-				"$(SRCROOT)/Pods/Target Support Files/Pods-reactnativemagictabbar/expo-configure-project.sh",
-			);
-			name = "[Expo] Configure project";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(SRCROOT)/Pods/Target Support Files/Pods-reactnativemagictabbar/ExpoModulesProvider.swift",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-reactnativemagictabbar/expo-configure-project.sh\"\n";
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -361,7 +361,7 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8AF7670505599A422CDC0818 /* Pods-reactnativemagictabbar.debug.xcconfig */;
+			baseConfigurationReference = D2480ED8357E44928625387D /* Pods-reactnativemagictabbar.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = expo;
 				CLANG_ENABLE_MODULES = YES;
@@ -398,7 +398,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3C724C16FA0E9857EDD52621 /* Pods-reactnativemagictabbar.release.xcconfig */;
+			baseConfigurationReference = 9EAD30B2AE7DFF7229EB0878 /* Pods-reactnativemagictabbar.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = expo;
 				CLANG_ENABLE_MODULES = YES;

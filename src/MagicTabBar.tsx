@@ -12,6 +12,7 @@ import type {
   MagicTabBarTheme,
   MagicTabBarVariant,
 } from "./types";
+import { clampBarOpacity } from "./utils";
 
 /**
  * Layout transition used to morph the bar between its normal and compact
@@ -47,9 +48,6 @@ const glassEffect = (() => {
     return null;
   }
 })();
-
-/** Lowest bar opacity we allow, so a transparent bar never becomes invisible. */
-export const MIN_BAR_OPACITY = 0.1;
 
 export interface MagicTabBarProps extends ViewProps {
   /** Resolved theme. Provided automatically by `MagicTabs`. */
@@ -135,9 +133,7 @@ export const MagicTabBar = forwardRef<RNView, MagicTabBarProps>(
     const useGlass = glass && !!glassEffect?.isLiquidGlassAvailable();
     // Only a transparent bar fades; otherwise it stays fully opaque. The level
     // is clamped so it never drops below MIN_BAR_OPACITY or above 1.
-    const barOpacity = isTransparent
-      ? Math.min(Math.max(transparency, MIN_BAR_OPACITY), 1)
-      : 1;
+    const barOpacity = clampBarOpacity(isTransparent, transparency);
     // A see-through bar shouldn't cast a hard drop shadow — it reads as an odd
     // halo around the translucent fill. Keep the shadow only for a solid bar.
     const seeThrough = useGlass || isTransparent;

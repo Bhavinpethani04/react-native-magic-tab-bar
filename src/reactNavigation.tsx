@@ -2,7 +2,7 @@ import { useMemo, type ReactNode } from 'react';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { MagicTabBar } from './MagicTabBar';
 import { MagicTabItem } from './MagicTabItem';
-import { defaultTheme } from './theme';
+import { mergeTheme, resolveItemLabelMode, resolveLabelMode } from './utils';
 import type {
   MagicLabelMode,
   MagicLabelPosition,
@@ -20,33 +20,6 @@ declare const __DEV__: boolean;
  * Navigation navigates by route `name`, so it is never needed.
  */
 export type MagicNavigationTab = Omit<MagicTabConfig, 'href'>;
-
-/**
- * Normalizes the `showLabels` prop (boolean shorthand or explicit mode) and
- * clamps it to what the current `labelPosition` can display well.
- *
- * Mirrors the logic in `MagicTabs` so both entry points behave identically:
- * `'always'` only works with `labelPosition="bottom"`, otherwise every tab
- * would expand to its full label width and overflow the bar.
- */
-function resolveLabelMode(
-  showLabels: boolean | MagicLabelMode,
-  labelPosition: MagicLabelPosition,
-): MagicLabelMode {
-  const mode: MagicLabelMode =
-    showLabels === true ? 'active' : showLabels === false ? 'never' : showLabels;
-
-  if (mode === 'always' && labelPosition !== 'bottom') {
-    if (__DEV__) {
-      console.warn(
-        '[MagicTabBarNavigation] showLabels="always" requires labelPosition="bottom"; ' +
-          'falling back to "active". Set labelPosition="bottom" to keep every label visible.',
-      );
-    }
-    return 'active';
-  }
-  return mode;
-}
 
 export interface MagicTabBarNavigationProps extends BottomTabBarProps {
   /**
@@ -144,10 +117,14 @@ export function MagicTabBarNavigation({
 }: MagicTabBarNavigationProps) {
   // Stable identity so it doesn't re-trigger memoized children every render.
   const theme = useMemo<MagicTabBarTheme>(
-    () => ({ ...defaultTheme, ...themeOverride }),
+    () => mergeTheme(themeOverride),
     [themeOverride],
   );
-  const barLabelMode = resolveLabelMode(showLabels, labelPosition);
+  const barLabelMode = resolveLabelMode(
+    showLabels,
+    labelPosition,
+    'MagicTabBarNavigation',
+  );
 
   // Index the config by route name for O(1) lookup while mapping routes.
   const tabByName = useMemo(() => {
@@ -187,18 +164,7 @@ export function MagicTabBarNavigation({
         }
 
         const focused = state.index === index;
-
-        // A tab's `showLabel` overrides the bar-level mode: `false` forces
-        // icon-only, `true` shows it (falling back to `'active'` when the bar
-        // itself is set to `'never'`).
-        const labelMode: MagicLabelMode =
-          tab.showLabel === undefined
-            ? barLabelMode
-            : tab.showLabel
-              ? barLabelMode === 'never'
-                ? 'active'
-                : barLabelMode
-              : 'never';
+        const labelMode = resolveItemLabelMode(barLabelMode, tab.showLabel);
 
         // Reproduce React Navigation's own tabBar press semantics: emit a
         // cancelable `tabPress` event and only navigate if it isn't prevented

@@ -3,10 +3,14 @@ import { Tabs, TabList, TabSlot, TabTrigger } from 'expo-router/ui';
 import { usePathname } from 'expo-router';
 import { MagicTabBar } from './MagicTabBar';
 import { MagicTabItem } from './MagicTabItem';
-import { defaultTheme } from './theme';
+import {
+  findActiveTab,
+  mergeTheme,
+  resolveItemLabelMode,
+  resolveLabelMode,
+} from './utils';
 import type { Href } from 'expo-router';
 import type {
-  MagicHref,
   MagicLabelMode,
   MagicLabelPosition,
   MagicTabBarTheme,
@@ -16,82 +20,6 @@ import type {
 } from './types';
 
 declare const __DEV__: boolean;
-
-/** Best-effort string path for a href (covers string and `{ pathname }` forms). */
-function hrefToPath(href: MagicHref | undefined): string {
-  if (typeof href === 'string') return href;
-  const pathname = (href as { pathname?: string } | undefined)?.pathname;
-  return typeof pathname === 'string' ? pathname : '';
-}
-
-/**
- * Removes Expo Router group segments (`(group)`) from a path so hrefs match
- * `usePathname()`. Groups are organizational and never appear in the URL, so
- * `href: "/(home)/expenses"` must compare against a pathname of `/expenses`.
- * Collapses any doubled or trailing slashes and falls back to `/` for root.
- */
-function stripGroupSegments(path: string): string {
-  return (
-    path
-      .replace(/\/\([^/)]+\)/g, '')
-      .replace(/\/{2,}/g, '/')
-      .replace(/(.)\/$/, '$1') || '/'
-  );
-}
-
-/**
- * Finds the tab whose `href` best matches the current path, by longest prefix
- * so nested routes (e.g. `/explore/details`) still resolve to their tab.
- */
-function findActiveTab(
-  tabs: MagicTabConfig[],
-  pathname: string,
-): MagicTabConfig | undefined {
-  let best: MagicTabConfig | undefined;
-  let bestLen = -1;
-  const currentPath = stripGroupSegments(pathname);
-  for (const tab of tabs) {
-    const rawPath = hrefToPath(tab.href);
-    if (!rawPath) continue;
-    const path = stripGroupSegments(rawPath);
-    const matches =
-      path === '/'
-        ? currentPath === '/'
-        : currentPath === path || currentPath.startsWith(`${path}/`);
-    if (matches && path.length > bestLen) {
-      best = tab;
-      bestLen = path.length;
-    }
-  }
-  return best;
-}
-
-/**
- * Normalizes the `showLabels` prop (boolean shorthand or explicit mode) and
- * clamps it to what the current `labelPosition` can display well.
- *
- * `'always'` only works with `labelPosition="bottom"`: side-by-side, every tab
- * would expand to its full label width and overflow the bar, so we downgrade
- * it to `'active'` (and warn in dev).
- */
-function resolveLabelMode(
-  showLabels: boolean | MagicLabelMode,
-  labelPosition: MagicLabelPosition,
-): MagicLabelMode {
-  const mode: MagicLabelMode =
-    showLabels === true ? 'active' : showLabels === false ? 'never' : showLabels;
-
-  if (mode === 'always' && labelPosition !== 'bottom') {
-    if (__DEV__) {
-      console.warn(
-        '[MagicTabs] showLabels="always" requires labelPosition="bottom"; ' +
-          'falling back to "active". Set labelPosition="bottom" to keep every label visible.',
-      );
-    }
-    return 'active';
-  }
-  return mode;
-}
 
 export interface MagicTabsProps {
   /**
@@ -194,7 +122,7 @@ export function MagicTabs({
 }: MagicTabsProps) {
   // Stable identity so it doesn't re-trigger memoized children every render.
   const theme = useMemo<MagicTabBarTheme>(
-    () => ({ ...defaultTheme, ...themeOverride }),
+    () => mergeTheme(themeOverride),
     [themeOverride],
   );
   const barLabelMode = resolveLabelMode(showLabels, labelPosition);
@@ -229,17 +157,7 @@ export function MagicTabs({
                   '`href` is only optional when using MagicTabBarNavigation with React Navigation.',
               );
             }
-            // A tab's `showLabel` overrides the bar-level mode: `false` forces
-            // icon-only, `true` shows it (falling back to `'active'` when the
-            // bar itself is set to `'never'`).
-            const labelMode: MagicLabelMode =
-              tab.showLabel === undefined
-                ? barLabelMode
-                : tab.showLabel
-                  ? barLabelMode === 'never'
-                    ? 'active'
-                    : barLabelMode
-                  : 'never';
+            const labelMode = resolveItemLabelMode(barLabelMode, tab.showLabel);
             return (
               <TabTrigger
                 key={tab.name}
