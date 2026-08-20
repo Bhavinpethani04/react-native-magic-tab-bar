@@ -1,0 +1,81 @@
+# Every tab navigates, and exactly one tab is selected at a time.
+#
+# Asserts on the tabs' selected state rather than screen copy, so the suite does
+# not break when the demo's content changes.
+appId: com.magicmax.magictab
+---
+- launchApp:
+    clearState: false
+# The app must actually be on screen before anything is asserted. A dev-client
+# bundle reload takes tens of seconds on a cold Android emulator, and every step
+# before first render sees a black screen with an empty view hierarchy.
+- extendedWaitUntil:
+    visible:
+      id: "tabcount-current"
+    timeout: 120000
+- runFlow:
+    file: helpers/set-tab-count.yaml
+    env:
+      COUNT: 5
+
+# Home starts selected.
+- assertVisible:
+    id: "tab-home"
+    selected: true
+
+- tapOn:
+    id: "tab-expenses"
+- waitForAnimationToEnd:
+    timeout: 3000
+- assertVisible:
+    id: "tab-expenses"
+    selected: true
+- assertVisible:
+    id: "tab-home"
+    selected: false
+
+- tapOn:
+    id: "tab-alerts"
+- waitForAnimationToEnd:
+    timeout: 3000
+- assertVisible:
+    id: "tab-alerts"
+    selected: true
+- takeScreenshot:
+    path: nav-alerts
+
+- tapOn:
+    id: "tab-budgets"
+- waitForAnimationToEnd:
+    timeout: 3000
+- assertVisible:
+    id: "tab-budgets"
+    selected: true
+
+- tapOn:
+    id: "tab-account"
+- waitForAnimationToEnd:
+    timeout: 3000
+- assertVisible:
+    id: "tab-account"
+    selected: true
+- takeScreenshot:
+    path: nav-account
+
+# Re-pressing the active tab must keep it selected (the `onTabPress` re-press
+# path must not deselect or navigate away).
+- tapOn:
+    id: "tab-account"
+- waitForAnimationToEnd:
+    timeout: 3000
+- assertVisible:
+    id: "tab-account"
+    selected: true
+
+- tapOn:
+    id: "tab-home"
+- waitForAnimationToEnd:
+    timeout: 3000
+- assertVisible:
+    id: "tab-home"
+    selected: true

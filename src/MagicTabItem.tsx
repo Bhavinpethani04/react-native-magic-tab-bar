@@ -22,7 +22,13 @@ import type {
   MagicTabIconProps,
   MagicTabPressHandler,
 } from './types';
-import { formatBadge, hasBadge } from './utils';
+import {
+  ACTION_TAB_ELEVATION,
+  ACTION_TAB_OVERHANG,
+  buildTabAccessibilityLabel,
+  formatBadge,
+  hasBadge,
+} from './utils';
 
 declare const require: (moduleName: string) => unknown;
 
@@ -46,6 +52,14 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 /** Fixed small icon size used by the compact "light" tab bar. */
 const LIGHT_ICON_SIZE = 20;
+
+/**
+ * Caps on the OS font-scaling multiplier. The badge is a fixed 16pt bubble, so
+ * its count has to stay inside it; labels may grow, but not so far that they
+ * blow out the bar's fixed height. Both still scale — just not without bound.
+ */
+const BADGE_MAX_FONT_SCALE = 1.2;
+const LABEL_MAX_FONT_SCALE = 1.4;
 
 /**
  * Extra vertical touch area added to every tab. The icons (and their tight
@@ -82,6 +96,8 @@ export interface MagicTabItemProps {
   haptics?: boolean;
   /** Route name, used for the press callbacks. Provided by `MagicTabs`. */
   name?: string;
+  /** `testID` for the pressable, so e2e suites can target this tab. */
+  testID?: string;
   /** Called when the tab is pressed. */
   onTabPress?: MagicTabPressHandler;
   /** Called when the tab is long-pressed. */
@@ -120,6 +136,7 @@ export const MagicTabItem = memo(forwardRef<RNView, MagicTabItemProps>(
       isLight = false,
       haptics = false,
       name,
+      testID,
       onTabPress,
       onTabLongPress,
       theme,
@@ -172,6 +189,9 @@ export const MagicTabItem = memo(forwardRef<RNView, MagicTabItemProps>(
 
     const badgeVisible = hasBadge(badge);
     const badgeIsDot = badge === true;
+    // Screen readers can't see the badge, so fold its meaning into the name
+    // (e.g. "Alerts, 3") rather than announcing a bare "Alerts".
+    const a11yLabel = buildTabAccessibilityLabel(label, name, badge);
 
     const iconWithBadge = (iconColor: string, size: number) => (
       <View>
@@ -188,6 +208,7 @@ export const MagicTabItem = memo(forwardRef<RNView, MagicTabItemProps>(
             {badgeIsDot ? null : (
               <Text
                 numberOfLines={1}
+                maxFontSizeMultiplier={BADGE_MAX_FONT_SCALE}
                 style={[styles.badgeText, { color: theme.badgeTextColor }]}
               >
                 {formatBadge(badge as number | string)}
@@ -204,11 +225,12 @@ export const MagicTabItem = memo(forwardRef<RNView, MagicTabItemProps>(
       return (
         <AnimatedPressable
           ref={ref}
+          testID={testID}
           onPress={handlePress}
           onLongPress={handleLongPress}
           disabled={disabled}
           accessibilityRole="button"
-          accessibilityLabel={label ?? name}
+          accessibilityLabel={a11yLabel}
           accessibilityState={{ selected: focused, disabled }}
           style={[
             styles.action,
@@ -234,11 +256,12 @@ export const MagicTabItem = memo(forwardRef<RNView, MagicTabItemProps>(
       return (
         <AnimatedPressable
           ref={ref}
+          testID={testID}
           onPress={handlePress}
           onLongPress={handleLongPress}
           disabled={disabled}
           accessibilityRole="tab"
-          accessibilityLabel={label ?? name}
+          accessibilityLabel={a11yLabel}
           accessibilityState={{ selected: focused, disabled }}
           hitSlop={TAB_HIT_SLOP}
           layout={transition}
@@ -273,11 +296,12 @@ export const MagicTabItem = memo(forwardRef<RNView, MagicTabItemProps>(
       return (
         <AnimatedPressable
           ref={ref}
+          testID={testID}
           onPress={handlePress}
           onLongPress={handleLongPress}
           disabled={disabled}
           accessibilityRole="tab"
-          accessibilityLabel={label ?? name}
+          accessibilityLabel={a11yLabel}
           accessibilityState={{ selected: focused, disabled }}
           hitSlop={TAB_HIT_SLOP}
           layout={transition}
@@ -307,6 +331,7 @@ export const MagicTabItem = memo(forwardRef<RNView, MagicTabItemProps>(
               entering={FadeIn.duration(150)}
               exiting={FadeOut.duration(120)}
               numberOfLines={1}
+              maxFontSizeMultiplier={LABEL_MAX_FONT_SCALE}
               style={[styles.labelBottom, { color, fontSize: theme.fontSize - 1 }]}
             >
               {label}
@@ -320,11 +345,12 @@ export const MagicTabItem = memo(forwardRef<RNView, MagicTabItemProps>(
     return (
       <AnimatedPressable
         ref={ref}
+        testID={testID}
         onPress={handlePress}
         onLongPress={handleLongPress}
         disabled={disabled}
         accessibilityRole="tab"
-        accessibilityLabel={label ?? name}
+        accessibilityLabel={a11yLabel}
         accessibilityState={{ selected: focused, disabled }}
         hitSlop={TAB_HIT_SLOP}
         layout={transition}
@@ -348,6 +374,7 @@ export const MagicTabItem = memo(forwardRef<RNView, MagicTabItemProps>(
             entering={FadeIn.duration(150)}
             exiting={FadeOut.duration(120)}
             numberOfLines={1}
+            maxFontSizeMultiplier={LABEL_MAX_FONT_SCALE}
             style={[styles.label, { color, fontSize: theme.fontSize }]}
           >
             {label}
@@ -411,12 +438,12 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: -22,
+    marginTop: -ACTION_TAB_OVERHANG,
     shadowColor: '#000',
     shadowOpacity: 0.3,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 4 },
-    elevation: 8,
+    elevation: ACTION_TAB_ELEVATION,
   },
   disabled: {
     opacity: 0.4,

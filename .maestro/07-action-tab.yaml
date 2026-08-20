@@ -1,0 +1,82 @@
+# The raised `action` (FAB) tab.
+#
+# The button is lifted above the bar with a negative margin, which puts its top
+# half outside the bar's bounds. Android does not draw or hit-test children
+# outside their parent, so 3.0.0 has the bar reserve matching headroom. This
+# flow taps the FAB in both variants — the tap is the assertion, and on Android
+# it is the actual regression test.
+appId: com.magicmax.magictab
+---
+- launchApp:
+    clearState: false
+# The app must actually be on screen before anything is asserted. A dev-client
+# bundle reload takes tens of seconds on a cold Android emulator, and every step
+# before first render sees a black screen with an empty view hierarchy.
+- extendedWaitUntil:
+    visible:
+      id: "tabcount-current"
+    timeout: 120000
+- runFlow:
+    file: helpers/set-tab-count.yaml
+    env:
+      COUNT: 5
+
+- tapOn:
+    id: "action-toggle"
+- waitForAnimationToEnd:
+    timeout: 3000
+- assertVisible:
+    id: "action-toggle"
+    checked: true
+
+# --- Floating + FAB ---
+- assertVisible:
+    id: "tab-alerts"
+- tapOn:
+    id: "tab-alerts"
+- waitForAnimationToEnd:
+    timeout: 3000
+- assertVisible:
+    id: "tab-alerts"
+    selected: true
+- takeScreenshot:
+    path: action-floating
+- tapOn:
+    id: "tab-home"
+- waitForAnimationToEnd:
+    timeout: 3000
+
+# --- Docked + FAB: the combination that used to clip the button on Android ---
+- tapOn:
+    id: "docked-toggle"
+- waitForAnimationToEnd:
+    timeout: 3000
+- assertVisible:
+    id: "tab-alerts"
+- tapOn:
+    id: "tab-alerts"
+- waitForAnimationToEnd:
+    timeout: 3000
+- assertVisible:
+    id: "tab-alerts"
+    selected: true
+- takeScreenshot:
+    path: action-docked
+
+# Reset the demo to its defaults.
+- tapOn:
+    id: "tab-home"
+- waitForAnimationToEnd:
+    timeout: 3000
+- tapOn:
+    id: "docked-toggle"
+- tapOn:
+    id: "action-toggle"
+- waitForAnimationToEnd:
+    timeout: 3000
+- assertVisible:
+    id: "action-toggle"
+    checked: false
+- assertVisible:
+    id: "docked-toggle"
+    checked: false

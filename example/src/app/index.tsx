@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useFocusedStatusBar } from "@/components/useFocusedStatusBar";
 import { tokens as t, money } from "@/components/tokens";
 import { CATEGORY, RECENT } from "@/components/expenses";
+import { TabCountControl } from "@/components/TabCountControl";
 
 export default function Home() {
   const insets = useSafeAreaInsets();
@@ -29,6 +30,10 @@ export default function Home() {
           <View style={styles.bellDot} />
         </View>
       </View>
+
+      {/* Demo control: resize the bar by changing how many tabs it renders.
+          Kept near the top so it and the floating bar are on screen together. */}
+      <TabCountControl />
 
       {/* Balance hero card */}
       <View style={styles.hero}>

@@ -45,6 +45,12 @@ export interface MagicTabBarNavigationProps extends BottomTabBarProps {
   lightBottomMargin?: number;
   /** Position the bar floating over content (default) or docked in-flow. */
   variant?: MagicTabBarVariant;
+  /**
+   * Stretch the bar across the full width, spreading the tabs evenly. Off by
+   * default — the bar is sized by its tabs and centered, so a bar with only two
+   * or three tabs stays a compact pill instead of spanning the screen.
+   */
+  fullWidth?: boolean;
   /** Make the bar background see-through. Off by default. */
   isTransparent?: boolean;
   /** Opacity of the bar background while `isTransparent` is true (0–1). */
@@ -107,6 +113,7 @@ export function MagicTabBarNavigation({
   isLight = false,
   lightBottomMargin,
   variant,
+  fullWidth,
   isTransparent,
   transparency,
   glass,
@@ -138,6 +145,8 @@ export function MagicTabBarNavigation({
   const activeRouteName = state.routes[state.index]?.name;
   const effectiveLight =
     isLight || !!(activeRouteName && tabByName.get(activeRouteName)?.isLight);
+  // Lets the bar reserve headroom for a raised FAB when docked.
+  const hasActionTab = tabs.some((tab) => tab.variant === 'action');
 
   return (
     <MagicTabBar
@@ -146,10 +155,12 @@ export function MagicTabBarNavigation({
       labelPosition={labelPosition}
       isLight={effectiveLight}
       lightBottomMargin={lightBottomMargin}
+      fullWidth={fullWidth}
       isTransparent={isTransparent}
       transparency={transparency}
       glass={glass}
       renderBackground={renderBackground}
+      hasActionTab={hasActionTab}
     >
       {state.routes.map((route, index) => {
         const tab = tabByName.get(route.name);
@@ -196,6 +207,7 @@ export function MagicTabBarNavigation({
             disabled={tab.disabled}
             variant={tab.variant}
             isLight={effectiveLight}
+            testID={tab.testID}
             haptics={haptics}
             theme={theme}
             isFocused={focused}

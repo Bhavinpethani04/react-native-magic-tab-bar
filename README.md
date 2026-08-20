@@ -29,6 +29,7 @@
 ## Features
 
 - 🎯 **Drop-in for both** — one component for Expo Router *and* React Navigation; bring your own icons.
+- 📐 **Sized by its tabs** — the bar hugs its content and centers, so two tabs give a compact pill, not a full-width bar with a hole in the middle.
 - ✨ **Animated active pill** with a spring you can tune.
 - 🏷️ **Flexible labels** — beside or below the icon; show on the active tab, always, or never.
 - 🔴 **Badges** — dots or counts on any tab.
@@ -36,6 +37,7 @@
 - 📳 **Haptics** and **press callbacks** (great for "scroll to top" on re-press).
 - ➕ **Action (FAB) tab** for a raised center button.
 - 🪶 **Light mode** — a compact, icon-only bar you can switch on **per tab** (e.g. only on an immersive full-screen feed), with a smooth transition.
+- ♿ **Accessible by default** — every tab is a labelled `tab` in a `tablist`, badges are announced ("Alerts, 3"), and touch targets meet the platform minimums.
 - 🎨 **Fully themeable** via a single `theme` prop.
 
 ## Table of contents
@@ -43,9 +45,11 @@
 - [Compatibility](#compatibility)
 - [Why react-native-magic-tab-bar?](#why-react-native-magic-tab-bar) *(comparison)*
 - [Installation](#installation)
+- [Upgrading from 2.x](#upgrading-from-2x)
 - [Quick start](#quick-start) *(Expo Router)*
 - [React Navigation (bare React Native)](#react-navigation-bare-react-native)
 - [Recipes](#recipes)
+  - [Bar width](#bar-width)
   - [Labels](#labels)
   - [Badges](#badges)
   - [Haptics and press callbacks](#haptics-and-press-callbacks)
@@ -54,6 +58,7 @@
   - [Glass, blur and transparency](#glass-blur-and-transparency)
   - [Light mode](#light-mode-compact-bar)
   - [Theming](#theming)
+  - [Accessibility](#accessibility)
 - [API](#api)
 - [FAQ](#faq)
 - [Development](#development)
@@ -153,6 +158,19 @@ iOS: `cd ios && pod install`. No Expo packages are required — the `glass` and 
 
 See the runnable [`example-cli`](example-cli) app for a complete setup.
 
+## Upgrading from 2.x
+
+3.0 changes three visual defaults. Each has a one-line fix if you want the old behavior:
+
+- **The bar is now content-sized and centered by default** (see [Bar width](#bar-width)). To keep an edge-to-edge bar, add `fullWidth`:
+  ```tsx
+  <MagicTabs tabs={tabs} fullWidth />
+  ```
+- **`docked` bars now add the safe-area bottom inset themselves.** If you wrapped a docked bar in a bottom-edge `SafeAreaView` to lift it off the home indicator, remove that wrapper to avoid doubled spacing.
+- **`renderBackground` no longer casts a drop shadow** (a custom background — usually a blur view — provides its own fill). No action needed unless you relied on the shadow behind an opaque custom background.
+
+See the [CHANGELOG](CHANGELOG.md) for the full list.
+
 ## Quick start
 
 Use `MagicTabs` as your tab navigator in `app/_layout.tsx`. Each entry in `tabs` maps a route to an icon and label:
@@ -239,7 +257,7 @@ export default function App() {
 
 - Each `tabs[].name` must match a `<Tab.Screen name>`.
 - **No `href`** — that's an Expo Router concept; React Navigation navigates by `name`.
-- Every visual prop from `MagicTabs` (`theme`, `showLabels`, `labelPosition`, `variant`, `isTransparent`, `renderBackground`, `haptics`, `onTabPress`, …) works here too, plus all the [Recipes](#recipes) below.
+- Every visual prop from `MagicTabs` (`theme`, `showLabels`, `labelPosition`, `variant`, `fullWidth`, `isTransparent`, `renderBackground`, `haptics`, `onTabPress`, …) works here too, plus all the [Recipes](#recipes) below.
 
 > **Icons** are bring-your-own, exactly like the Expo entry — the `icon` render function is identical. This example uses [`react-native-vector-icons`](https://github.com/oblador/react-native-vector-icons) (the bare-RN counterpart of `@expo/vector-icons`). Bundle its fonts the CocoaPods way — **not** `react-native-asset`: on **iOS** the pod bundles the font files (just add a `UIAppFonts` entry to `Info.plist`), and on **Android** apply the package's `fonts.gradle` in `app/build.gradle`. The only Expo-specific props are `glass` (`expo-glass-effect`) and `haptics` (`expo-haptics`), which no-op in bare RN unless you add those modules.
 
@@ -251,6 +269,25 @@ export default function App() {
 
 > The recipes below are written with `MagicTabs` (Expo Router), but every prop
 > shown also works on `MagicTabBarNavigation` — pass it the same way.
+
+### Bar width
+
+The bar is **sized by its tabs** and centered — it grows with the number of tabs
+(and the active tab's label) up to the width left by `theme.horizontalMargin`,
+then stops. A two-tab bar is a compact pill rather than an edge-to-edge bar with
+a large gap in the middle. The width change is animated, so adding or removing a
+tab morphs the bar.
+
+```tsx
+<MagicTabs tabs={tabs} />           // content-sized, centered (default)
+<MagicTabs tabs={tabs} fullWidth /> // edge-to-edge, tabs spread evenly
+```
+
+Use `theme.horizontalMargin` to cap how wide it may ever get:
+
+```tsx
+<MagicTabs tabs={tabs} theme={{ horizontalMargin: 48 }} /> // narrower ceiling
+```
 
 ### Labels
 
@@ -323,7 +360,7 @@ Uses `theme.actionColor` / `theme.actionIconColor`.
 
 ### Light mode (compact bar)
 
-A shorter, **icon-only** bar (65% width, floating higher). Turn it on for the whole bar, or **per tab** so it only appears on an immersive screen:
+A shorter, **icon-only** bar that floats higher and — like the normal bar — is sized by its tabs, so it stays a tight pill whatever the tab count. Turn it on for the whole bar, or **per tab** so it only appears on an immersive screen:
 
 ```tsx
 // Whole bar
@@ -372,6 +409,40 @@ Everything visual — colors, sizes, corner radius, the animation spring — liv
 
 See the [full token list with defaults](#magictabbartheme) for sizes (`iconSize`, `height`, `fontSize`), spacing (`horizontalMargin`, `bottomInset`) and more.
 
+### Accessibility
+
+The bar is usable with VoiceOver and TalkBack out of the box — there is nothing
+to switch on.
+
+**Tabs are labelled.** Each tab exposes its `label` as its accessible name,
+falling back to the route `name` when a tab has no label. The row is marked
+`accessibilityRole="tablist"` and each tab `accessibilityRole="tab"`, so
+assistive tech announces "tab 2 of 5" rather than reading five anonymous
+buttons. The active tab is reported as selected.
+
+**Badges are announced.** A badge is invisible to a screen reader, so its
+meaning is folded into the tab's accessible name — a count or string badge
+appends its value, and a dot badge (`badge: true`) announces "new item":
+
+```tsx
+{ name: "alerts", href: "/alerts", label: "Alerts", badge: 3,    icon } // → "Alerts, 3"
+{ name: "alerts", href: "/alerts", label: "Alerts", badge: 150,  icon } // → "Alerts, 99+"
+{ name: "feed",   href: "/feed",   label: "Feed",   badge: true, icon } // → "Feed, new item"
+```
+
+**Touch targets meet the platform minimums.** Icons render smaller than the
+~44pt (iOS HIG) / 48dp (Material) minimum, so tabs add vertical `hitSlop` to
+reach it without changing the visual layout. The extra area is vertical only, so
+neighbouring tabs never overlap.
+
+**Large text is respected, within limits.** Labels and badge counts scale with
+the OS font size, capped so they can't blow out the bar's fixed height or
+overflow the badge bubble. Labels truncate to one line rather than wrapping.
+
+> Targeting tabs from an e2e suite? Prefer [`testID`](#magictabconfig) over the
+> accessible name — the name is the visible label, which may collide with other
+> text on screen.
+
 ## API
 
 ### `<MagicTabs />`
@@ -383,6 +454,7 @@ See the [full token list with defaults](#magictabbartheme) for sizes (`iconSize`
 | `showLabels` | `boolean \| 'active' \| 'always' \| 'never'` | `'active'` | When labels are shown. `'always'` needs `labelPosition="bottom"`. |
 | `labelPosition` | `'right' \| 'bottom'` | `'right'` | Label beside or below the icon. |
 | `variant` | `'floating' \| 'docked'` | `'floating'` | Float over content, or dock in flow. |
+| `fullWidth` | `boolean` | `false` | Stretch the bar edge-to-edge and spread the tabs. Off by default — the bar is [sized by its tabs](#bar-width). |
 | `isLight` | `boolean` | `false` | Force the compact light bar for all tabs. |
 | `lightBottomMargin` | `number` | `14` | Extra bottom gap in light mode only. |
 | `isTransparent` | `boolean` | `false` | Make the bar background see-through. |
@@ -406,6 +478,7 @@ See the [full token list with defaults](#magictabbartheme) for sizes (`iconSize`
 | `disabled` | `boolean?` | Dim the tab and block navigation. |
 | `variant` | `'action'?` | Render as a raised FAB button. |
 | `isLight` | `boolean?` | Switch the whole bar to light mode while this tab is active. |
+| `testID` | `string?` | `testID` for the tab, so e2e suites (Maestro, Detox, Appium…) can target it. Without one, tabs are reachable by their accessibility label — which is the visible `label`, and may collide with other text on screen. |
 
 ### `<MagicTabBarNavigation />`
 
@@ -417,7 +490,7 @@ It receives React Navigation's `BottomTabBarProps` (spread from `{...props}`) pl
 | --- | --- | --- | --- |
 | `tabs` | `MagicNavigationTab[]` | **required** | Per-tab config keyed by route `name` (same as `MagicTabConfig` but without `href`). |
 
-All other visual props are identical to [`<MagicTabs />`](#magictabs-): `theme`, `showLabels`, `labelPosition`, `variant`, `isLight`, `lightBottomMargin`, `isTransparent`, `transparency`, `glass`, `renderBackground`, `haptics`, `onTabPress`, `onTabLongPress`.
+All other visual props are identical to [`<MagicTabs />`](#magictabs-): `theme`, `showLabels`, `labelPosition`, `variant`, `fullWidth`, `isLight`, `lightBottomMargin`, `isTransparent`, `transparency`, `glass`, `renderBackground`, `haptics`, `onTabPress`, `onTabLongPress`.
 
 > `MagicNavigationTab` is `Omit<MagicTabConfig, 'href'>`.
 
@@ -500,7 +573,23 @@ cd example-cli && npm install
 npm run ios            # or: npm run android
 ```
 
-Editing files in `src/` hot-reloads in whichever example is running.
+Editing files in `src/` hot-reloads in whichever example is running. (If a
+library edit doesn't show up, restart Metro with `npx expo start --clear` — a
+stale bundler cache serves the old library code.)
+
+### Tests
+
+```bash
+npm test          # unit tests: the pure logic in src/utils.ts (no RN runtime)
+npm run typecheck
+npm run e2e       # Maestro flows against the Expo example on a simulator
+npm run e2e:measure  # asserts the bar's on-device geometry at every tab count
+```
+
+The [Maestro suite](.maestro) is what covers the parts a unit test can't: it
+drives the example app at 1–5 tabs and checks the bar is content-sized, centred,
+and never wider than `theme.horizontalMargin` allows. See
+[`.maestro/README.md`](.maestro/README.md) for setup and what each flow covers.
 
 ### Building / publishing
 

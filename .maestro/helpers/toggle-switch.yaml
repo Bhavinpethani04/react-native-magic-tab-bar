@@ -1,0 +1,13 @@
+# Flips one of the demo's switches and waits for the bar to settle.
+# Call it twice to get back where you started.
+#
+# Params:
+#   TOGGLE — the switch's testID, e.g. `docked-toggle` or `action-toggle`.
+appId: com.magicmax.magictab
+---
+- tapOn:
+    id: "tab-home"
+- tapOn:
+    id: "${TOGGLE}"
+- waitForAnimationToEnd:
+    timeout: 3000

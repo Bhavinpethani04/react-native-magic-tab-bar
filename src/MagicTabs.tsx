@@ -58,6 +58,15 @@ export interface MagicTabsProps {
   /** Position the bar floating over content (default) or docked in-flow. */
   variant?: MagicTabBarVariant;
   /**
+   * Stretch the bar across the full width, spreading the tabs evenly.
+   *
+   * Off by default: the bar is sized by its tabs and centered, so a two- or
+   * three-tab bar is a compact pill instead of a full-width bar with a big gap
+   * in the middle. It still grows with the number of tabs, up to the width
+   * allowed by `theme.horizontalMargin`.
+   */
+  fullWidth?: boolean;
+  /**
    * Make the bar background see-through. Off by default. When `true`, control
    * the strength with `transparency`.
    */
@@ -112,6 +121,7 @@ export function MagicTabs({
   isLight = false,
   lightBottomMargin,
   variant,
+  fullWidth,
   isTransparent,
   transparency,
   glass,
@@ -133,6 +143,8 @@ export function MagicTabs({
   const pathname = usePathname();
   const activeTab = findActiveTab(tabs, pathname);
   const effectiveLight = isLight || !!activeTab?.isLight;
+  // Lets the bar reserve headroom for a raised FAB when docked.
+  const hasActionTab = tabs.some((tab) => tab.variant === 'action');
 
   return (
     <Tabs>
@@ -144,10 +156,12 @@ export function MagicTabs({
           labelPosition={labelPosition}
           isLight={effectiveLight}
           lightBottomMargin={lightBottomMargin}
+          fullWidth={fullWidth}
           isTransparent={isTransparent}
           transparency={transparency}
           glass={glass}
           renderBackground={renderBackground}
+          hasActionTab={hasActionTab}
         >
           {tabs.map((tab) => {
             if (__DEV__ && tab.href === undefined) {
@@ -175,6 +189,7 @@ export function MagicTabs({
                   disabled={tab.disabled}
                   variant={tab.variant}
                   isLight={effectiveLight}
+                  testID={tab.testID}
                   haptics={haptics}
                   onTabPress={onTabPress}
                   onTabLongPress={onTabLongPress}

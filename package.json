@@ -1,6 +1,6 @@
 {
   "name": "react-native-magic-tab-bar",
-  "version": "2.1.1",
+  "version": "3.0.0",
   "description": "Custom animated bottom tab bar for React Native — floating, glass/blur, badges & haptics. One component for Expo Router and React Navigation (bare RN CLI). iOS & Android, TypeScript.",
   "workspaces": [
     "example"
@@ -28,6 +28,7 @@
   "files": [
     "src",
     "lib",
+    "CHANGELOG.md",
     "!**/__tests__",
     "!**/*.test.*",
     "!**/*.spec.*"
@@ -38,7 +39,9 @@
     "prepare": "bob build",
     "typecheck": "tsc --noEmit",
     "test": "jest",
-    "example": "npm --prefix example run start"
+    "example": "npm --prefix example run start",
+    "e2e": "maestro test .maestro",
+    "e2e:measure": "node scripts/measure-tab-bar.mjs"
   },
   "keywords": [
     "react-native",

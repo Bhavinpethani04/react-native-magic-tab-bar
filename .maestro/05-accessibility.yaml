@@ -1,0 +1,43 @@
+# Accessible names.
+#
+# Every tab exposes an `accessibilityLabel`, and a tab's badge is folded into it
+# so screen readers announce what the badge conveys. Asserting by *text* here is
+# deliberate: Maestro matches an element's accessible name, so this only passes
+# if the label is really exposed to assistive tech — the `testID` selectors the
+# other flows use would pass even with no label at all.
+appId: com.magicmax.magictab
+---
+- launchApp:
+    clearState: false
+# The app must actually be on screen before anything is asserted. A dev-client
+# bundle reload takes tens of seconds on a cold Android emulator, and every step
+# before first render sees a black screen with an empty view hierarchy.
+- extendedWaitUntil:
+    visible:
+      id: "tabcount-current"
+    timeout: 120000
+- runFlow:
+    file: helpers/set-tab-count.yaml
+    env:
+      COUNT: 5
+
+# Un-badged tabs announce just their label.
+- assertVisible: "Home"
+- assertVisible: "Budgets"
+- assertVisible: "Account"
+
+# The badged tab folds its count in: "Alerts, 3", not a bare "Alerts".
+- assertVisible: "Alerts, 3"
+
+# And the accessible name is what drives the tap target.
+- tapOn: "Alerts, 3"
+- waitForAnimationToEnd:
+    timeout: 3000
+- assertVisible:
+    id: "tab-alerts"
+    selected: true
+
+- tapOn:
+    id: "tab-home"
+- waitForAnimationToEnd:
+    timeout: 3000

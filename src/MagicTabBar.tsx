@@ -12,25 +12,25 @@ import type {
   MagicTabBarTheme,
   MagicTabBarVariant,
 } from "./types";
-import { clampBarOpacity } from "./utils";
+import {
+  ACTION_TAB_OVERHANG,
+  BAR_ELEVATION,
+  clampBarOpacity,
+  LIGHT_EXTRA_BOTTOM_MARGIN,
+  resolveBarBottomPadding,
+  resolveBarHeight,
+} from "./utils";
 
 /**
  * Layout transition used to morph the bar between its normal and compact
  * "light" shapes (width, height and bottom margin) when the active tab changes.
+ * Because the bar is sized by its content, this also animates the width change
+ * when tabs are added or removed.
  */
 const barTransition = LinearTransition.springify()
   .mass(0.5)
   .damping(16)
   .stiffness(160);
-
-/** Extra bar height when labels sit below icons, so they have room to breathe. */
-const BOTTOM_LABEL_EXTRA_HEIGHT = 6;
-
-/** Fixed height of the compact "light" bar. */
-const LIGHT_BAR_HEIGHT = 46;
-
-/** Default extra bottom margin added below the bar in "light" mode. */
-const LIGHT_EXTRA_BOTTOM_MARGIN = 14;
 
 declare const require: (moduleName: string) => unknown;
 
@@ -61,14 +61,23 @@ export interface MagicTabBarProps extends ViewProps {
    */
   labelPosition?: MagicLabelPosition;
   /**
+   * Stretch the bar across the full available width, spreading the tabs evenly.
+   *
+   * Off by default: the bar is sized by its content, so a two-tab bar is a
+   * compact centered pill rather than a full-width bar with a large gap in the
+   * middle. It still grows with the number of tabs, up to the full width
+   * allowed by `theme.horizontalMargin`.
+   */
+  fullWidth?: boolean;
+  /**
    * Make the bar background see-through. Off by default — the bar is fully
    * opaque. Set the strength of the effect with `transparency`.
    */
   isTransparent?: boolean;
   /**
    * Opacity of the bar background while `isTransparent` is true, from 0 to 1
-   * (e.g. `0.4` = 40% visible). Clamped to a minimum of {@link MIN_BAR_OPACITY}
-   * so the bar never disappears. Defaults to 0.6 when omitted.
+   * (e.g. `0.4` = 40% visible). Clamped to a minimum so the bar never
+   * disappears. Defaults to 0.6 when omitted.
    */
   transparency?: number;
   /**
@@ -77,8 +86,20 @@ export interface MagicTabBarProps extends ViewProps {
    * back to the translucent `barColor` (honoring `transparency`).
    */
   glass?: boolean;
-  /** Render a custom background (e.g. a blur/glass view) behind the bar. */
+  /**
+   * Render a custom background (e.g. a blur/glass view) behind the bar. A
+   * custom background provides its own fill, so the bar draws no `barColor`
+   * layer and no drop shadow behind it (a rectangular halo behind a blur view
+   * is never wanted). Provided automatically by `MagicTabs`.
+   */
   renderBackground?: () => ReactNode;
+  /**
+   * Whether any tab uses `variant: 'action'` (a raised FAB). A `docked` bar
+   * reserves headroom above itself for the raised button so it isn't clipped or
+   * un-tappable on Android. Provided automatically by `MagicTabs`; set it
+   * yourself only if you render `MagicTabBar` directly with a docked action tab.
+   */
+  hasActionTab?: boolean;
   /**
    * Compact "light" mode: a shorter, icon-only bar with extra bottom margin.
    * Provided automatically by `MagicTabs`.
@@ -97,6 +118,10 @@ export interface MagicTabBarProps extends ViewProps {
 /**
  * The visual container of the tab bar. Designed to be used as the `asChild`
  * target of an Expo Router `<TabList>`.
+ *
+ * The bar is sized by its content and centered, so its width tracks the number
+ * of tabs (and the active tab's label) instead of always spanning the screen.
+ * Pass `fullWidth` to opt back into an edge-to-edge bar.
  */
 export const MagicTabBar = forwardRef<RNView, MagicTabBarProps>(
   function MagicTabBar(
@@ -104,10 +129,12 @@ export const MagicTabBar = forwardRef<RNView, MagicTabBarProps>(
       theme,
       variant = "floating",
       labelPosition = "right",
+      fullWidth = false,
       isTransparent = false,
       transparency = 0.6,
       glass = false,
       renderBackground,
+      hasActionTab = false,
       isLight = false,
       lightBottomMargin = LIGHT_EXTRA_BOTTOM_MARGIN,
       children,
@@ -118,16 +145,13 @@ export const MagicTabBar = forwardRef<RNView, MagicTabBarProps>(
   ) {
     const insets = useSafeAreaInsets();
     const floating = variant !== "docked";
-    // "Light" mode is a fixed, compact height. Otherwise stacked (bottom) labels
-    // need more vertical room than the icon-only / side-by-side layouts, so the
-    // bar grows a little in that mode.
-    const barHeight = isLight
-      ? LIGHT_BAR_HEIGHT
-      : labelPosition === "bottom"
-        ? theme.height + BOTTOM_LABEL_EXTRA_HEIGHT
-        : theme.height;
-    // "Light" mode floats a little higher off the bottom edge.
-    const extraBottomMargin = isLight ? lightBottomMargin : 0;
+    const barHeight = resolveBarHeight(theme.height, labelPosition, isLight);
+    const bottomPadding = resolveBarBottomPadding(
+      insets.bottom,
+      theme.bottomInset,
+      isLight,
+      lightBottomMargin,
+    );
     // Native Liquid Glass needs the optional `expo-glass-effect` dep and iOS
     // 26+; everywhere else we fall back to the translucent color background.
     const useGlass = glass && !!glassEffect?.isLiquidGlassAvailable();
@@ -135,8 +159,17 @@ export const MagicTabBar = forwardRef<RNView, MagicTabBarProps>(
     // is clamped so it never drops below MIN_BAR_OPACITY or above 1.
     const barOpacity = clampBarOpacity(isTransparent, transparency);
     // A see-through bar shouldn't cast a hard drop shadow — it reads as an odd
-    // halo around the translucent fill. Keep the shadow only for a solid bar.
-    const seeThrough = useGlass || isTransparent;
+    // halo around the translucent fill. A custom `renderBackground` counts as
+    // see-through too: it's almost always a blur view, and a rectangular halo
+    // behind it is never what you want.
+    const seeThrough = useGlass || isTransparent || !!renderBackground;
+    // A solid bar paints its fill on the shadow-casting view itself rather than
+    // in a child layer. Both platforms derive the shadow's shape from the view's
+    // own background: on iOS a background-less layer gives a wrong (or missing)
+    // shadow, and on Android `elevation` needs a background to build an outline
+    // from. The child-layer approach is only needed when `transparency` has to
+    // fade the fill without fading the icons on top of it.
+    const solidFill = !seeThrough;
 
     return (
       <View
@@ -144,13 +177,17 @@ export const MagicTabBar = forwardRef<RNView, MagicTabBarProps>(
         pointerEvents="box-none"
         style={[
           floating ? styles.floatingWrapper : styles.dockedWrapper,
-          // Light mode centers a narrower bar; drop the side padding so the
-          // bar's width is measured against the full screen width.
-          isLight && styles.lightWrapper,
+          // A docked bar sits in-flow, so it only reserves the raised-FAB
+          // headroom when an action tab actually needs it — otherwise it would
+          // leave a dead gap above the bar. (Floating reserves it unconditionally
+          // above, where the absolute, box-none wrapper makes the space free.)
+          !floating && hasActionTab && styles.dockedActionHeadroom,
+          // Content-sized bars are centered; a full-width bar stretches to fill
+          // the wrapper instead.
+          fullWidth ? styles.wrapperStretch : styles.wrapperCenter,
           {
-            paddingHorizontal: isLight ? 0 : theme.horizontalMargin,
-            paddingBottom:
-              (floating ? insets.bottom : 0) + theme.bottomInset + extraBottomMargin,
+            paddingHorizontal: theme.horizontalMargin,
+            paddingBottom: bottomPadding,
           },
         ]}
       >
@@ -159,8 +196,11 @@ export const MagicTabBar = forwardRef<RNView, MagicTabBarProps>(
           style={[
             styles.bar,
             !seeThrough && styles.barShadow,
-            isLight && styles.lightBar,
-            { height: barHeight, borderRadius: theme.radius },
+            {
+              height: barHeight,
+              borderRadius: theme.radius,
+              ...(solidFill ? { backgroundColor: theme.barColor } : null),
+            },
           ]}
         >
           {renderBackground ? (
@@ -182,7 +222,7 @@ export const MagicTabBar = forwardRef<RNView, MagicTabBarProps>(
               tintColor={theme.barColor}
               style={[StyleSheet.absoluteFill, { borderRadius: theme.radius }]}
             />
-          ) : (
+          ) : isTransparent ? (
             // Background color lives in its own layer so `transparency` fades
             // only the bar's fill, never the icons or labels on top of it.
             <View
@@ -196,8 +236,16 @@ export const MagicTabBar = forwardRef<RNView, MagicTabBarProps>(
                 },
               ]}
             />
-          )}
-          <View style={[isLight ? styles.lightRow : styles.row, style]} {...rest}>
+          ) : null}
+          <View
+            accessibilityRole="tablist"
+            style={[
+              isLight ? styles.lightRow : styles.row,
+              fullWidth && styles.rowFullWidth,
+              style,
+            ]}
+            {...rest}
+          >
             {children}
           </View>
         </Animated.View>
@@ -212,40 +260,58 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
+    // Headroom for an `action` (FAB) tab, which is raised above the bar with a
+    // negative margin. Android does not draw or hit-test children outside their
+    // parent's bounds, so without this the raised button is clipped and its top
+    // half is not tappable. The wrapper is `box-none`, so the extra space stays
+    // transparent to touches.
+    paddingTop: ACTION_TAB_OVERHANG,
   },
   dockedWrapper: {
     width: "100%",
   },
-  bar: {
-    flexDirection: "row",
+  // Headroom for a raised `action` (FAB) tab on a docked bar — see the floating
+  // wrapper's note. Applied only when an action tab is present so a plain docked
+  // bar keeps no extra gap above it.
+  dockedActionHeadroom: {
+    paddingTop: ACTION_TAB_OVERHANG,
   },
-  // Light mode: a narrower bar (65% of screen width) centered by its wrapper.
-  lightWrapper: {
+  wrapperCenter: {
     alignItems: "center",
   },
-  lightBar: {
-    width: "65%",
+  wrapperStretch: {
+    alignItems: "stretch",
+  },
+  bar: {
+    flexDirection: "row",
+    // Never exceed the space left by the wrapper's horizontal margin, however
+    // many tabs there are.
+    maxWidth: "100%",
   },
   barShadow: {
     shadowColor: "#000",
     shadowOpacity: 0.25,
     shadowRadius: 16,
     shadowOffset: { width: 0, height: 8 },
-    elevation: 12,
+    elevation: BAR_ELEVATION,
   },
+  // Sized by its tabs: the bar hugs the row, so the row must not stretch.
   row: {
-    flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-around",
+    justifyContent: "center",
     paddingHorizontal: 6,
   },
   // Compact "light" row: tighter horizontal padding around the small icons.
   lightRow: {
-    flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-around",
+    justifyContent: "center",
     paddingHorizontal: 10,
+  },
+  // `fullWidth`: fill the bar and spread the tabs evenly across it.
+  rowFullWidth: {
+    flex: 1,
+    justifyContent: "space-around",
   },
 });

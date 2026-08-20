@@ -1,0 +1,51 @@
+# The `fullWidth` opt-out.
+#
+# Content sizing is the default; `fullWidth` restores the edge-to-edge bar that
+# spreads its tabs evenly. Verified here at 2 tabs, where the two layouts differ
+# most — `npm run e2e:measure` asserts the widths numerically.
+appId: com.magicmax.magictab
+---
+- launchApp:
+    clearState: false
+# The app must actually be on screen before anything is asserted. A dev-client
+# bundle reload takes tens of seconds on a cold Android emulator, and every step
+# before first render sees a black screen with an empty view hierarchy.
+- extendedWaitUntil:
+    visible:
+      id: "tabcount-current"
+    timeout: 120000
+- runFlow:
+    file: helpers/set-tab-count.yaml
+    env:
+      COUNT: 2
+
+# Content-sized (default).
+- assertVisible:
+    id: "fullwidth-toggle"
+    checked: false
+- takeScreenshot:
+    path: width-2-content
+
+# Edge to edge.
+- tapOn:
+    id: "fullwidth-toggle"
+- waitForAnimationToEnd:
+    timeout: 3000
+- assertVisible:
+    id: "fullwidth-toggle"
+    checked: true
+- assertVisible:
+    id: "tab-home"
+- assertVisible:
+    id: "tab-expenses"
+- takeScreenshot:
+    path: width-2-fullwidth
+
+# ...and back, so the toggle is not one-way and the demo is left at its default.
+- tapOn:
+    id: "fullwidth-toggle"
+- waitForAnimationToEnd:
+    timeout: 3000
+- assertVisible:
+    id: "fullwidth-toggle"
+    checked: false
