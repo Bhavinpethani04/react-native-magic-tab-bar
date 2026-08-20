@@ -29,6 +29,25 @@ export function formatBadge(badge: number | string): string {
   return typeof badge === 'number' && badge > 99 ? '99+' : String(badge);
 }
 
+/**
+ * Builds the accessible name announced for a tab, folding any badge into the
+ * label so screen-reader users hear what the badge conveys (e.g. "Alerts, 3").
+ * A dot badge announces "new item"; a count/string badge announces its value.
+ * Falls back to the route `name` when no `label` is set, and to the badge
+ * detail alone when neither a label nor a name is available.
+ */
+export function buildTabAccessibilityLabel(
+  label: string | undefined,
+  name: string | undefined,
+  badge: number | string | boolean | undefined,
+): string | undefined {
+  const base = label ?? name;
+  if (!hasBadge(badge)) return base;
+  const detail =
+    badge === true ? 'new item' : formatBadge(badge as number | string);
+  return base ? `${base}, ${detail}` : detail;
+}
+
 // ---------------------------------------------------------------------------
 // Route matching (Expo Router)
 // ---------------------------------------------------------------------------
@@ -151,6 +170,74 @@ export function clampBarOpacity(
   return isTransparent
     ? Math.min(Math.max(transparency, MIN_BAR_OPACITY), 1)
     : 1;
+}
+
+// ---------------------------------------------------------------------------
+// Bar metrics
+// ---------------------------------------------------------------------------
+
+/** Extra bar height when labels sit below icons, so they have room to breathe. */
+export const BOTTOM_LABEL_EXTRA_HEIGHT = 6;
+
+/** Fixed height of the compact "light" bar. */
+export const LIGHT_BAR_HEIGHT = 46;
+
+/** Default extra bottom margin added below the bar in "light" mode. */
+export const LIGHT_EXTRA_BOTTOM_MARGIN = 14;
+
+/**
+ * How far an `action` (FAB) tab is raised above the top of the bar (via a
+ * negative margin). The bar reserves this much headroom so the raised button is
+ * neither clipped nor un-tappable on Android, which ignores children drawn
+ * outside their parent's bounds. Shared by the item (which lifts the button)
+ * and the bar (which reserves the space).
+ */
+export const ACTION_TAB_OVERHANG = 22;
+
+/**
+ * Android `elevation` for the bar, and for a raised `action` (FAB) tab.
+ *
+ * The action tab MUST sit above the bar. On Android, elevation is a z-order
+ * across the whole window, not a per-parent one: a nested child with a lower
+ * elevation than an ancestor that paints a background is composited *beneath*
+ * that background. The bar paints its `barColor` on the elevated view (so its
+ * shadow gets a correct outline), so a FAB elevated below it disappears
+ * entirely — the icon still draws, but its circular background does not.
+ */
+export const BAR_ELEVATION = 12;
+export const ACTION_TAB_ELEVATION = BAR_ELEVATION + 4;
+
+/**
+ * Height of the bar for the current mode. "Light" mode is a fixed compact
+ * height; otherwise stacked (`bottom`) labels need more vertical room than the
+ * icon-only / side-by-side layouts, so the bar grows a little.
+ */
+export function resolveBarHeight(
+  themeHeight: number,
+  labelPosition: MagicLabelPosition,
+  isLight: boolean,
+): number {
+  if (isLight) return LIGHT_BAR_HEIGHT;
+  return labelPosition === 'bottom'
+    ? themeHeight + BOTTOM_LABEL_EXTRA_HEIGHT
+    : themeHeight;
+}
+
+/**
+ * Space reserved below the bar: the safe-area inset, the theme's `bottomInset`,
+ * and the extra "light" margin when compact.
+ *
+ * The safe-area inset applies to both variants — a `docked` bar also sits at
+ * the bottom edge, so skipping it there put the bar under the home indicator /
+ * gesture bar.
+ */
+export function resolveBarBottomPadding(
+  safeAreaBottom: number,
+  bottomInset: number,
+  isLight: boolean,
+  lightBottomMargin: number,
+): number {
+  return safeAreaBottom + bottomInset + (isLight ? lightBottomMargin : 0);
 }
 
 // ---------------------------------------------------------------------------

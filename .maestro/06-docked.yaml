@@ -1,0 +1,65 @@
+# The `docked` variant.
+#
+# 3.0.0 makes docked bars apply the bottom safe-area inset, which they
+# previously skipped — so a docked bar could sit under the home indicator.
+# The inset itself is measured by `npm run e2e:measure`; this flow proves the
+# variant renders, stays interactive, and survives a tab-count change.
+appId: com.magicmax.magictab
+---
+- launchApp:
+    clearState: false
+# The app must actually be on screen before anything is asserted. A dev-client
+# bundle reload takes tens of seconds on a cold Android emulator, and every step
+# before first render sees a black screen with an empty view hierarchy.
+- extendedWaitUntil:
+    visible:
+      id: "tabcount-current"
+    timeout: 120000
+- runFlow:
+    file: helpers/set-tab-count.yaml
+    env:
+      COUNT: 5
+
+- tapOn:
+    id: "docked-toggle"
+- waitForAnimationToEnd:
+    timeout: 3000
+- assertVisible:
+    id: "docked-toggle"
+    checked: true
+
+# Docked still renders every tab and still navigates.
+- assertVisible:
+    id: "tab-home"
+- assertVisible:
+    id: "tab-account"
+- tapOn:
+    id: "tab-budgets"
+- waitForAnimationToEnd:
+    timeout: 3000
+- assertVisible:
+    id: "tab-budgets"
+    selected: true
+- takeScreenshot:
+    path: docked-5-tabs
+
+# Docked is content-sized too — shrinking the count must reshape it.
+- tapOn:
+    id: "tab-home"
+- runFlow:
+    file: helpers/set-tab-count.yaml
+    env:
+      COUNT: 2
+- assertNotVisible:
+    id: "tab-alerts"
+- takeScreenshot:
+    path: docked-2-tabs
+
+# Leave the demo floating again.
+- tapOn:
+    id: "docked-toggle"
+- waitForAnimationToEnd:
+    timeout: 3000
+- assertVisible:
+    id: "docked-toggle"
+    checked: false

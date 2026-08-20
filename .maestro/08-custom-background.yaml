@@ -1,0 +1,64 @@
+# A custom `renderBackground`.
+#
+# 3.0.0 treats a custom background as see-through: the bar skips both its own
+# `barColor` fill and its drop shadow, because a custom background is almost
+# always a blur view and a rectangular shadow halo behind one is unwanted.
+#
+# The two screenshots are the evidence for the shadow half of that claim —
+# `bar-default` has the shadow, `bar-custom-background` must not.
+appId: com.magicmax.magictab
+---
+- launchApp:
+    clearState: false
+# The app must actually be on screen before anything is asserted. A dev-client
+# bundle reload takes tens of seconds on a cold Android emulator, and every step
+# before first render sees a black screen with an empty view hierarchy.
+- extendedWaitUntil:
+    visible:
+      id: "tabcount-current"
+    timeout: 120000
+- runFlow:
+    file: helpers/set-tab-count.yaml
+    env:
+      COUNT: 5
+
+# Baseline: solid bar, drop shadow present.
+- assertVisible:
+    id: "custombg-toggle"
+    checked: false
+- takeScreenshot:
+    path: bar-default
+
+- tapOn:
+    id: "custombg-toggle"
+- waitForAnimationToEnd:
+    timeout: 3000
+- assertVisible:
+    id: "custombg-toggle"
+    checked: true
+
+# The bar keeps working — a custom background must not swallow the tabs.
+- assertVisible:
+    id: "tab-home"
+- tapOn:
+    id: "tab-budgets"
+- waitForAnimationToEnd:
+    timeout: 3000
+- assertVisible:
+    id: "tab-budgets"
+    selected: true
+- takeScreenshot:
+    path: bar-custom-background
+
+# Reset.
+- tapOn:
+    id: "tab-home"
+- waitForAnimationToEnd:
+    timeout: 3000
+- tapOn:
+    id: "custombg-toggle"
+- waitForAnimationToEnd:
+    timeout: 3000
+- assertVisible:
+    id: "custombg-toggle"
+    checked: false

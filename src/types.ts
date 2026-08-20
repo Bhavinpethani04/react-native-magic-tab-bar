@@ -72,6 +72,13 @@ export interface MagicTabConfig {
    * transition between modes is animated.
    */
   isLight?: boolean;
+  /**
+   * `testID` for the tab's pressable, so end-to-end suites (Maestro, Detox,
+   * Appium…) can target it directly. Without one, tabs are still reachable by
+   * their accessibility label — but that is the visible `label`, which may
+   * collide with other text on screen.
+   */
+  testID?: string;
   /** Renders the tab's icon. */
   icon: (props: MagicTabIconProps) => ReactNode;
 }

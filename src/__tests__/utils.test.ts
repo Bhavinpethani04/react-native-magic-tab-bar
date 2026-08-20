@@ -1,11 +1,16 @@
 import {
+  BOTTOM_LABEL_EXTRA_HEIGHT,
+  buildTabAccessibilityLabel,
   clampBarOpacity,
   findActiveTab,
   formatBadge,
   hasBadge,
   hrefToPath,
+  LIGHT_BAR_HEIGHT,
   mergeTheme,
   MIN_BAR_OPACITY,
+  resolveBarBottomPadding,
+  resolveBarHeight,
   resolveItemLabelMode,
   resolveLabelMode,
   stripGroupSegments,
@@ -53,6 +58,49 @@ describe('formatBadge', () => {
     expect(formatBadge('150')).toBe('150');
     expect(formatBadge('new')).toBe('new');
     expect(formatBadge('99+')).toBe('99+');
+  });
+});
+
+describe('buildTabAccessibilityLabel', () => {
+  it('uses the label when there is no badge', () => {
+    expect(buildTabAccessibilityLabel('Home', 'index', undefined)).toBe('Home');
+    expect(buildTabAccessibilityLabel('Home', 'index', false)).toBe('Home');
+    expect(buildTabAccessibilityLabel('Home', 'index', 0)).toBe('Home');
+  });
+
+  it('falls back to the route name when there is no label', () => {
+    expect(buildTabAccessibilityLabel(undefined, 'search', undefined)).toBe(
+      'search',
+    );
+  });
+
+  it('folds a count/string badge into the name', () => {
+    expect(buildTabAccessibilityLabel('Alerts', 'alerts', 3)).toBe('Alerts, 3');
+    expect(buildTabAccessibilityLabel('Alerts', 'alerts', 150)).toBe(
+      'Alerts, 99+',
+    );
+    expect(buildTabAccessibilityLabel('Inbox', 'inbox', 'new')).toBe(
+      'Inbox, new',
+    );
+  });
+
+  it('announces a dot badge (`true`) as "new item"', () => {
+    expect(buildTabAccessibilityLabel('Feed', 'feed', true)).toBe(
+      'Feed, new item',
+    );
+  });
+
+  it('returns just the badge detail when neither label nor name is set', () => {
+    expect(buildTabAccessibilityLabel(undefined, undefined, 5)).toBe('5');
+    expect(buildTabAccessibilityLabel(undefined, undefined, true)).toBe(
+      'new item',
+    );
+  });
+
+  it('returns undefined when there is nothing to announce', () => {
+    expect(
+      buildTabAccessibilityLabel(undefined, undefined, undefined),
+    ).toBeUndefined();
   });
 });
 
@@ -223,5 +271,44 @@ describe('mergeTheme', () => {
     const merged = mergeTheme({ barColor: '#123456' });
     expect(merged).not.toBe(defaultTheme);
     expect(defaultTheme.barColor).toBe(before);
+  });
+});
+
+describe('resolveBarHeight', () => {
+  it('uses the theme height for side-by-side labels', () => {
+    expect(resolveBarHeight(56, 'right', false)).toBe(56);
+    expect(resolveBarHeight(72, 'right', false)).toBe(72);
+  });
+
+  it('adds room for labels stacked below the icon', () => {
+    expect(resolveBarHeight(56, 'bottom', false)).toBe(
+      56 + BOTTOM_LABEL_EXTRA_HEIGHT,
+    );
+  });
+
+  it('is a fixed compact height in light mode, whatever the theme says', () => {
+    expect(resolveBarHeight(56, 'right', true)).toBe(LIGHT_BAR_HEIGHT);
+    expect(resolveBarHeight(90, 'bottom', true)).toBe(LIGHT_BAR_HEIGHT);
+  });
+});
+
+describe('resolveBarBottomPadding', () => {
+  it('stacks the safe-area inset on top of the theme inset', () => {
+    expect(resolveBarBottomPadding(34, 10, false, 14)).toBe(44);
+  });
+
+  it('clears the home indicator even when the theme inset is 0', () => {
+    // Regression: the docked variant used to drop the safe-area inset entirely,
+    // leaving the bar sitting on the home indicator / gesture bar.
+    expect(resolveBarBottomPadding(34, 0, false, 14)).toBe(34);
+  });
+
+  it('adds the extra light margin only in light mode', () => {
+    expect(resolveBarBottomPadding(34, 10, true, 14)).toBe(58);
+    expect(resolveBarBottomPadding(34, 10, false, 40)).toBe(44);
+  });
+
+  it('handles a device with no bottom inset', () => {
+    expect(resolveBarBottomPadding(0, 10, false, 14)).toBe(10);
   });
 });

@@ -1,0 +1,66 @@
+# Compact "light" mode, driven per tab.
+#
+# The demo's Expenses tab sets `isLight: true`, so selecting it morphs the whole
+# bar into the short icon-only layout — and leaving it morphs back. Light mode
+# used to be pinned at 65% of the screen width; it is now content-sized like the
+# normal bar, which `npm run e2e:measure` covers numerically. Here we verify the
+# transition works and capture it at two different tab counts.
+appId: com.magicmax.magictab
+---
+- launchApp:
+    clearState: false
+# The app must actually be on screen before anything is asserted. A dev-client
+# bundle reload takes tens of seconds on a cold Android emulator, and every step
+# before first render sees a black screen with an empty view hierarchy.
+- extendedWaitUntil:
+    visible:
+      id: "tabcount-current"
+    timeout: 120000
+
+# --- Light bar with 5 tabs ---
+- runFlow:
+    file: helpers/set-tab-count.yaml
+    env:
+      COUNT: 5
+- tapOn:
+    id: "tab-expenses"
+- waitForAnimationToEnd:
+    timeout: 3000
+- assertVisible:
+    id: "tab-expenses"
+    selected: true
+# Every tab survives the morph — light mode hides labels, not tabs.
+- assertVisible:
+    id: "tab-home"
+- assertVisible:
+    id: "tab-account"
+- takeScreenshot:
+    path: light-5-tabs
+
+# --- Back to the normal bar ---
+- tapOn:
+    id: "tab-home"
+- waitForAnimationToEnd:
+    timeout: 3000
+- assertVisible:
+    id: "tab-home"
+    selected: true
+- takeScreenshot:
+    path: light-back-to-normal
+
+# --- Light bar with only 2 tabs: the compact bar must shrink too ---
+- runFlow:
+    file: helpers/set-tab-count.yaml
+    env:
+      COUNT: 2
+- tapOn:
+    id: "tab-expenses"
+- waitForAnimationToEnd:
+    timeout: 3000
+- assertVisible:
+    id: "tab-expenses"
+    selected: true
+- assertNotVisible:
+    id: "tab-alerts"
+- takeScreenshot:
+    path: light-2-tabs

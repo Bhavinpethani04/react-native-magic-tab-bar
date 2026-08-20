@@ -1,0 +1,19 @@
+# Switches the demo to ${COUNT} tabs and waits for the bar to settle.
+#
+# Params:
+#   COUNT — how many tabs the bar should render (1-5).
+appId: com.magicmax.magictab
+---
+# The switcher lives on Home, which is always the first tab, so it survives
+# every count. Getting back there first makes this callable from any screen.
+- tapOn:
+    id: "tab-home"
+- tapOn:
+    id: "tabcount-${COUNT}"
+# The card echoes the applied count — proves the tap landed before we measure.
+- assertVisible:
+    id: "tabcount-current"
+    text: "${COUNT}"
+# The bar springs to its new width; let the layout animation finish.
+- waitForAnimationToEnd:
+    timeout: 3000
