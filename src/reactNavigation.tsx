@@ -1,4 +1,5 @@
 import { useMemo, type ReactNode } from 'react';
+import type { StyleProp, TextStyle } from 'react-native';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { MagicTabBar } from './MagicTabBar';
 import { MagicTabItem } from './MagicTabItem';
@@ -39,6 +40,14 @@ export interface MagicTabBarNavigationProps extends BottomTabBarProps {
   showLabels?: boolean | MagicLabelMode;
   /** Place labels to the right of icons (default) or below them. */
   labelPosition?: MagicLabelPosition;
+  /**
+   * Extra style for every tab label, applied last — e.g. `fontWeight`,
+   * `letterSpacing` or `textTransform`. For a custom font, set
+   * `theme.fontFamily` instead.
+   */
+  labelStyle?: StyleProp<TextStyle>;
+  /** Extra style for the badge count text, applied last. */
+  badgeTextStyle?: StyleProp<TextStyle>;
   /** Force the compact "light" bar layout for every route. */
   isLight?: boolean;
   /** Extra bottom margin below the bar in "light" mode. Defaults to 14. */
@@ -110,6 +119,8 @@ export function MagicTabBarNavigation({
   theme: themeOverride,
   showLabels = true,
   labelPosition = 'right',
+  labelStyle,
+  badgeTextStyle,
   isLight = false,
   lightBottomMargin,
   variant,
@@ -209,6 +220,8 @@ export function MagicTabBarNavigation({
             isLight={effectiveLight}
             testID={tab.testID}
             haptics={haptics}
+            labelStyle={labelStyle}
+            badgeTextStyle={badgeTextStyle}
             theme={theme}
             isFocused={focused}
             onPress={handlePress}

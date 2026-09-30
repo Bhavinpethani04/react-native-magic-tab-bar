@@ -241,6 +241,23 @@ export function resolveBarBottomPadding(
 }
 
 // ---------------------------------------------------------------------------
+// Typography
+// ---------------------------------------------------------------------------
+
+/**
+ * Font style for a label or badge. With the system font we apply the built-in
+ * `weight`; with a custom `fontFamily` we apply only the family, since custom
+ * fonts are typically one family per weight and a forced weight makes Android
+ * synthesize a faux-bold face.
+ */
+export function resolveFontStyle<W extends string>(
+  fontFamily: string | undefined,
+  weight: W,
+): { fontFamily: string } | { fontWeight: W } {
+  return fontFamily ? { fontFamily } : { fontWeight: weight };
+}
+
+// ---------------------------------------------------------------------------
 // Theme
 // ---------------------------------------------------------------------------
 
