@@ -5,6 +5,8 @@ import {
   Text,
   View,
   type GestureResponderEvent,
+  type StyleProp,
+  type TextStyle,
   type View as RNView,
 } from 'react-native';
 import Animated, {
@@ -28,6 +30,7 @@ import {
   buildTabAccessibilityLabel,
   formatBadge,
   hasBadge,
+  resolveFontStyle,
 } from './utils';
 
 declare const require: (moduleName: string) => unknown;
@@ -102,6 +105,14 @@ export interface MagicTabItemProps {
   onTabPress?: MagicTabPressHandler;
   /** Called when the tab is long-pressed. */
   onTabLongPress?: MagicTabPressHandler;
+  /**
+   * Extra style for the tab label, applied last (e.g. `fontWeight`,
+   * `letterSpacing`, `textTransform`). The font family itself is usually
+   * easier to set once via `theme.fontFamily`.
+   */
+  labelStyle?: StyleProp<TextStyle>;
+  /** Extra style for the badge count text, applied last. */
+  badgeTextStyle?: StyleProp<TextStyle>;
   /** Resolved theme. Provided automatically by `MagicTabs`. */
   theme: MagicTabBarTheme;
 
@@ -139,6 +150,8 @@ export const MagicTabItem = memo(forwardRef<RNView, MagicTabItemProps>(
       testID,
       onTabPress,
       onTabLongPress,
+      labelStyle,
+      badgeTextStyle,
       theme,
       isFocused,
       onPress,
@@ -192,6 +205,8 @@ export const MagicTabItem = memo(forwardRef<RNView, MagicTabItemProps>(
     // Screen readers can't see the badge, so fold its meaning into the name
     // (e.g. "Alerts, 3") rather than announcing a bare "Alerts".
     const a11yLabel = buildTabAccessibilityLabel(label, name, badge);
+    const labelFont = resolveFontStyle(theme.fontFamily, '600');
+    const badgeFont = resolveFontStyle(theme.fontFamily, '700');
 
     const iconWithBadge = (iconColor: string, size: number) => (
       <View>
@@ -209,7 +224,12 @@ export const MagicTabItem = memo(forwardRef<RNView, MagicTabItemProps>(
               <Text
                 numberOfLines={1}
                 maxFontSizeMultiplier={BADGE_MAX_FONT_SCALE}
-                style={[styles.badgeText, { color: theme.badgeTextColor }]}
+                style={[
+                  styles.badgeText,
+                  badgeFont,
+                  { color: theme.badgeTextColor },
+                  badgeTextStyle,
+                ]}
               >
                 {formatBadge(badge as number | string)}
               </Text>
@@ -332,7 +352,12 @@ export const MagicTabItem = memo(forwardRef<RNView, MagicTabItemProps>(
               exiting={FadeOut.duration(120)}
               numberOfLines={1}
               maxFontSizeMultiplier={LABEL_MAX_FONT_SCALE}
-              style={[styles.labelBottom, { color, fontSize: theme.fontSize - 1 }]}
+              style={[
+                styles.labelBottom,
+                labelFont,
+                { color, fontSize: theme.fontSize - 1 },
+                labelStyle,
+              ]}
             >
               {label}
             </Animated.Text>
@@ -375,7 +400,12 @@ export const MagicTabItem = memo(forwardRef<RNView, MagicTabItemProps>(
             exiting={FadeOut.duration(120)}
             numberOfLines={1}
             maxFontSizeMultiplier={LABEL_MAX_FONT_SCALE}
-            style={[styles.label, { color, fontSize: theme.fontSize }]}
+            style={[
+              styles.label,
+              labelFont,
+              { color, fontSize: theme.fontSize },
+              labelStyle,
+            ]}
           >
             {label}
           </Animated.Text>
@@ -403,8 +433,9 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 18,
   },
+  // Font weight is applied per render via `resolveFontStyle`, so a custom
+  // `theme.fontFamily` isn't forced into a synthesized bold.
   label: {
-    fontWeight: '600',
     flexShrink: 1,
   },
   // Material Design 3 bottom layout: icon (with capsule indicator) stacked
@@ -431,7 +462,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
   },
   labelBottom: {
-    fontWeight: '600',
     textAlign: 'center',
   },
   action: {
@@ -469,7 +499,6 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     fontSize: 10,
-    fontWeight: '700',
     textAlign: 'center',
   },
 });

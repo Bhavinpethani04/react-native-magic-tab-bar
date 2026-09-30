@@ -4,6 +4,18 @@ All notable changes to this project are documented here. This project follows
 [Semantic Versioning](https://semver.org/): the leading number changes when a
 release alters existing behavior in a way that can require you to update code.
 
+## 3.1.0
+
+### Added
+
+- **Custom fonts** — set `theme.fontFamily` to render tab labels and badge
+  counts in your own font. With a custom family the bar no longer forces a bold
+  weight (which made Android synthesize a faux-bold face); choose the weight
+  through the family name instead. The system-font look is unchanged.
+- **`labelStyle` and `badgeTextStyle` props** on `MagicTabs` and
+  `MagicTabBarNavigation` — extra `TextStyle` applied last, for
+  `letterSpacing`, `textTransform`, `fontWeight` and so on.
+
 ## 3.0.0
 
 ### Breaking changes

@@ -122,6 +122,16 @@ export interface MagicTabBarTheme {
   iconSize: number;
   /** Font size of the active tab's label, in points. */
   fontSize: number;
+  /**
+   * Custom font family for tab labels and badge counts, e.g. a font loaded
+   * with `expo-font` or linked into a bare app. Defaults to the system font.
+   *
+   * When set, the bar stops applying its own bold weight: custom fonts are
+   * usually loaded as one family per weight (e.g. `"Inter-SemiBold"`), and
+   * forcing a weight on top makes Android synthesize a faux-bold face. Pick the
+   * weight through the family name, or set `fontWeight` via `labelStyle`.
+   */
+  fontFamily?: string;
   /** Height of the bar. */
   height: number;
   /** Corner radius of the bar and the active pill. */

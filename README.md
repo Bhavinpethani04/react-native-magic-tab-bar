@@ -58,6 +58,7 @@
   - [Glass, blur and transparency](#glass-blur-and-transparency)
   - [Light mode](#light-mode-compact-bar)
   - [Theming](#theming)
+  - [Custom fonts](#custom-fonts)
   - [Accessibility](#accessibility)
 - [API](#api)
 - [FAQ](#faq)
@@ -409,6 +410,40 @@ Everything visual — colors, sizes, corner radius, the animation spring — liv
 
 See the [full token list with defaults](#magictabbartheme) for sizes (`iconSize`, `height`, `fontSize`), spacing (`horizontalMargin`, `bottomInset`) and more.
 
+### Custom fonts
+
+Load the font the usual way for your app, then pass its family name as `theme.fontFamily`. It applies to every tab label and badge count.
+
+```tsx
+// app/_layout.tsx (Expo Router)
+import { useFonts } from "expo-font";
+
+export default function Layout() {
+  const [loaded] = useFonts({
+    "Inter-SemiBold": require("../assets/fonts/Inter-SemiBold.ttf"),
+  });
+  if (!loaded) return null;
+
+  return <MagicTabs tabs={tabs} theme={{ fontFamily: "Inter-SemiBold" }} />;
+}
+```
+
+In a bare React Native app, link the font files (e.g. `npx react-native-asset`) and use the same `theme={{ fontFamily: "..." }}` on `MagicTabBarNavigation`.
+
+- **Choose the weight through the family name.** With the system font the bar uses a bold weight (`600` for labels, `700` for badges). With a custom `fontFamily` it stops setting a weight: custom fonts are normally loaded one file per weight, and forcing a weight on top makes Android draw a synthesized faux-bold.
+- **Need more control?** `labelStyle` and `badgeTextStyle` take any `TextStyle` and are applied last. Use them for `letterSpacing`, `textTransform`, or a `fontWeight` if your font family has several registered weights.
+
+```tsx
+<MagicTabs
+  tabs={tabs}
+  theme={{ fontFamily: "Inter-SemiBold" }}
+  labelStyle={{ letterSpacing: 0.3, textTransform: "uppercase" }}
+  badgeTextStyle={{ fontFamily: "Inter-Bold" }}
+/>
+```
+
+> On iOS the family name comes from inside the font file and can differ from the file name. If the font doesn't show, check the name with `getLoadedFonts()` from `expo-font`.
+
 ### Accessibility
 
 The bar is usable with VoiceOver and TalkBack out of the box — there is nothing
@@ -453,6 +488,8 @@ overflow the badge bubble. Labels truncate to one line rather than wrapping.
 | `theme` | `Partial<MagicTabBarTheme>` | `defaultTheme` | Override any visual token. |
 | `showLabels` | `boolean \| 'active' \| 'always' \| 'never'` | `'active'` | When labels are shown. `'always'` needs `labelPosition="bottom"`. |
 | `labelPosition` | `'right' \| 'bottom'` | `'right'` | Label beside or below the icon. |
+| `labelStyle` | `StyleProp<TextStyle>` | — | Extra label style, applied last. See [Custom fonts](#custom-fonts). |
+| `badgeTextStyle` | `StyleProp<TextStyle>` | — | Extra badge-count style, applied last. |
 | `variant` | `'floating' \| 'docked'` | `'floating'` | Float over content, or dock in flow. |
 | `fullWidth` | `boolean` | `false` | Stretch the bar edge-to-edge and spread the tabs. Off by default — the bar is [sized by its tabs](#bar-width). |
 | `isLight` | `boolean` | `false` | Force the compact light bar for all tabs. |
@@ -490,7 +527,7 @@ It receives React Navigation's `BottomTabBarProps` (spread from `{...props}`) pl
 | --- | --- | --- | --- |
 | `tabs` | `MagicNavigationTab[]` | **required** | Per-tab config keyed by route `name` (same as `MagicTabConfig` but without `href`). |
 
-All other visual props are identical to [`<MagicTabs />`](#magictabs-): `theme`, `showLabels`, `labelPosition`, `variant`, `fullWidth`, `isLight`, `lightBottomMargin`, `isTransparent`, `transparency`, `glass`, `renderBackground`, `haptics`, `onTabPress`, `onTabLongPress`.
+All other visual props are identical to [`<MagicTabs />`](#magictabs-): `theme`, `showLabels`, `labelPosition`, `labelStyle`, `badgeTextStyle`, `variant`, `fullWidth`, `isLight`, `lightBottomMargin`, `isTransparent`, `transparency`, `glass`, `renderBackground`, `haptics`, `onTabPress`, `onTabLongPress`.
 
 > `MagicNavigationTab` is `Omit<MagicTabConfig, 'href'>`.
 
@@ -504,6 +541,7 @@ All other visual props are identical to [`<MagicTabs />`](#magictabs-): `theme`,
 | `inactiveColor` | `#FFFFFF` | Inactive icon color |
 | `iconSize` | `22` | Icon size |
 | `fontSize` | `12` | Active label size |
+| `fontFamily` | system font | Custom font for labels and badges. See [Custom fonts](#custom-fonts). |
 | `height` | `56` | Bar height |
 | `radius` | `28` | Bar & pill corner radius |
 | `badgeColor` | `#FF3B30` | Badge background |

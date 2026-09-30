@@ -11,6 +11,7 @@ import {
   MIN_BAR_OPACITY,
   resolveBarBottomPadding,
   resolveBarHeight,
+  resolveFontStyle,
   resolveItemLabelMode,
   resolveLabelMode,
   stripGroupSegments,
@@ -310,5 +311,20 @@ describe('resolveBarBottomPadding', () => {
 
   it('handles a device with no bottom inset', () => {
     expect(resolveBarBottomPadding(0, 10, false, 14)).toBe(10);
+  });
+});
+
+describe('resolveFontStyle', () => {
+  it('uses the built-in weight with the system font', () => {
+    expect(resolveFontStyle(undefined, '600')).toEqual({ fontWeight: '600' });
+    expect(resolveFontStyle('', '700')).toEqual({ fontWeight: '700' });
+  });
+
+  it('applies only the family for a custom font, never a forced weight', () => {
+    // A forced weight on a single-weight custom family makes Android
+    // synthesize a faux-bold face.
+    expect(resolveFontStyle('Inter-SemiBold', '600')).toEqual({
+      fontFamily: 'Inter-SemiBold',
+    });
   });
 });

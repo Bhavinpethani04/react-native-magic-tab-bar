@@ -1,4 +1,5 @@
 import { useMemo, type ReactNode } from 'react';
+import type { StyleProp, TextStyle } from 'react-native';
 import { Tabs, TabList, TabSlot, TabTrigger } from 'expo-router/ui';
 import { usePathname } from 'expo-router';
 import { MagicTabBar } from './MagicTabBar';
@@ -43,6 +44,14 @@ export interface MagicTabsProps {
   showLabels?: boolean | MagicLabelMode;
   /** Place labels to the right of icons (default) or below them. */
   labelPosition?: MagicLabelPosition;
+  /**
+   * Extra style for every tab label, applied last — e.g. `fontWeight`,
+   * `letterSpacing` or `textTransform`. For a custom font, set
+   * `theme.fontFamily` instead.
+   */
+  labelStyle?: StyleProp<TextStyle>;
+  /** Extra style for the badge count text, applied last. */
+  badgeTextStyle?: StyleProp<TextStyle>;
   /**
    * Compact "light" mode. Off by default. When `true`, the bar is shorter,
    * shows small icons only (labels hidden), and floats with extra bottom
@@ -118,6 +127,8 @@ export function MagicTabs({
   theme: themeOverride,
   showLabels = true,
   labelPosition = 'right',
+  labelStyle,
+  badgeTextStyle,
   isLight = false,
   lightBottomMargin,
   variant,
@@ -193,6 +204,8 @@ export function MagicTabs({
                   haptics={haptics}
                   onTabPress={onTabPress}
                   onTabLongPress={onTabLongPress}
+                  labelStyle={labelStyle}
+                  badgeTextStyle={badgeTextStyle}
                   theme={theme}
                 />
               </TabTrigger>
