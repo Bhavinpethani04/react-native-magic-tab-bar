@@ -4,6 +4,17 @@ All notable changes to this project are documented here. This project follows
 [Semantic Versioning](https://semver.org/): the leading number changes when a
 release alters existing behavior in a way that can require you to update code.
 
+## 3.1.1
+
+### Fixed
+
+- **The package no longer bundles in Expo Snack** (and other bundlers that honor
+  the `source` field). `package.json` advertised `"source": "./src/index.tsx"`,
+  so those bundlers loaded the raw TypeScript instead of the compiled output and
+  failed with `Module parse failed: Unexpected token (1:0)`. The field is gone;
+  resolution now goes through `exports`/`main` as it should. Metro ignores
+  `source`, so Expo Router and React Native CLI apps were unaffected.
+
 ## 3.1.0
 
 ### Added

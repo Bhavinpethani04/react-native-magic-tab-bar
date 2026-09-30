@@ -1,6 +1,6 @@
 {
   "name": "react-native-magic-tab-bar",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "Custom animated bottom tab bar for React Native — floating, glass/blur, badges & haptics. One component for Expo Router and React Navigation (bare RN CLI). iOS & Android, TypeScript.",
   "workspaces": [
     "example"
@@ -8,7 +8,6 @@
   "main": "./lib/module/index.js",
   "module": "./lib/module/index.js",
   "types": "./lib/typescript/index.d.ts",
-  "source": "./src/index.tsx",
   "sideEffects": false,
   "exports": {
     ".": {
