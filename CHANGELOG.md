@@ -4,7 +4,7 @@ All notable changes to this project are documented here. This project follows
 [Semantic Versioning](https://semver.org/): the leading number changes when a
 release alters existing behavior in a way that can require you to update code.
 
-## Unreleased
+## 3.1.0
 
 ### Added
 
